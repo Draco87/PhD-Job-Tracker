@@ -4,18 +4,158 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Application Tracker</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- REMOVED: <script src="https://cdn.tailwindcss.com"></script> -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/plugin/relativeTime.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .kanban-column { min-height: 400px; }
+        /* --- Embedded Tailwind CSS --- */
+        /* This CSS is generated from the classes used in the app to make it self-contained. */
+        :root { --tw-border-spacing-x: 0; --tw-border-spacing-y: 0; /* ... other root variables */ }
+        *, ::before, ::after { box-sizing: border-box; border-width: 0; border-style: solid; border-color: #e5e7eb; }
+        html { line-height: 1.5; -webkit-text-size-adjust: 100%; -moz-tab-size: 4; tab-size: 4; font-family: 'Inter', sans-serif; }
+        body { margin: 0; line-height: inherit; font-family: 'Inter', sans-serif; }
+        h1, h2, h3, p, button, label, input, a { margin: 0; padding: 0; }
+        svg { display: block; vertical-align: middle; }
+
+        .fixed { position: fixed; }
+        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+        .z-50 { z-index: 50; }
+        .relative { position: relative; }
+        .hidden { display: none; }
+        .block { display: block; }
+        .flex { display: flex; }
+        .grid { display: grid; }
+        
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-end { justify-content: flex-end; }
+
+        .w-full { width: 100%; }
+        .h-8 { height: 2rem; }
+        .w-8 { width: 2.25rem; }
+        .max-w-7xl { max-width: 80rem; }
+        .max-w-lg { max-width: 32rem; }
+        .flex-1 { flex: 1 1 0%; }
+        .flex-grow { flex-grow: 1; }
+
+        .transform { transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+        .transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+        
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .p-8 { padding: 2rem; }
+        .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .pb-2 { padding-bottom: 0.5rem; }
+        .pt-4 { padding-top: 1rem; }
+
+        .m-4 { margin: 1rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .ml-1 { margin-left: 0.25rem; }
+        .ml-auto { margin-left: auto; }
+        
+        .space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 1rem; }
+        .space-x-3 > :not([hidden]) ~ :not([hidden]) { margin-left: 0.75rem; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-6 { gap: 1.5rem; }
+
+        .bg-gray-50 { background-color: #f9fafb; }
+        .bg-gray-100 { background-color: #f3f4f6; }
+        .bg-gray-200 { background-color: #e5e7eb; }
+        .bg-white { background-color: #fff; }
+        .bg-red-500 { background-color: #ef4444; }
+        .bg-green-100 { background-color: #d1fae5; }
+        .bg-green-600 { background-color: #16a34a; }
+        .bg-indigo-600 { background-color: #4f46e5; }
         .modal-bg { background-color: rgba(0,0,0,0.5); }
-        .auth-form-container { max-width: 400px; }
+
+        .text-gray-400 { color: #9ca3af; }
+        .text-gray-500 { color: #6b7280; }
+        .text-gray-600 { color: #4b5563; }
+        .text-gray-700 { color: #374151; }
+        .text-gray-800 { color: #1f2937; }
+        .text-gray-900 { color: #111827; }
+        .text-white { color: #fff; }
+        .text-indigo-600 { color: #4f46e5; }
+        .text-green-800 { color: #065f46; }
+        .text-red-500 { color: #ef4444; }
+        .text-red-600 { color: #dc2626; }
+        
+        .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+        
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .rounded-full { border-radius: 9999px; }
+        .rounded-md { border-radius: 0.375rem; }
+
+        .border-b { border-bottom-width: 1px; }
+        .border-b-2 { border-bottom-width: 2px; }
+        .border-l-4 { border-left-width: 4px; }
+        .border-gray-200 { border-color: #e5e7eb; }
+        .border-gray-300 { border-color: #d1d4d7; }
+        .border-indigo-600 { border-color: #4f46e5; }
+        .border-red-500 { border-color: #ef4444; }
+        .border-yellow-400 { border-color: #f59e0b; }
+        .border-green-500 { border-color: #22c55e; }
+        
+        .shadow-md { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1); }
+        .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); }
+        .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+
+        .focus\:ring-indigo-500:focus { --tw-ring-color: #4f46e5; box-shadow: var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color); }
+        .focus\:border-indigo-500:focus { border-color: #4f46e5; }
+        
+        .hover\:bg-red-600:hover { background-color: #dc2626; }
+        .hover\:bg-indigo-700:hover { background-color: #4338ca; }
+        .hover\:bg-green-700:hover { background-color: #15803d; }
+        .hover\:bg-green-200:hover { background-color: #a7f3d0; }
+        .hover\:bg-gray-200:hover { background-color: #e5e7eb; }
+        .hover\:bg-gray-300:hover { background-color: #d1d4d7; }
+        .hover\:text-red-500:hover { color: #ef4444; }
+        .hover\:text-gray-600:hover { color: #4b5563; }
+        .hover\:underline:hover { text-decoration-line: underline; }
+        .hover\:scale-105:hover { --tw-scale-x: 1.05; --tw-scale-y: 1.05; transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+        
+        .animate-spin { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .opacity-25 { opacity: 0.25; }
+        .opacity-75 { opacity: 0.75; }
+        
+        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        @media (min-width: 768px) { .md\:p-8 { padding: 2rem; } .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (min-width: 1024px) { .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        
+        input { font-size: 1rem; padding: 0.5rem 0.75rem; border: 1px solid #d1d4d7; }
+        button { cursor: pointer; }
+        a { color: inherit; text-decoration: inherit; }
+
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -44,28 +184,28 @@
         </div>
 
         <!-- Authentication Container -->
-        <div id="auth-container" class="hidden w-full auth-form-container mx-auto">
+        <div id="auth-container" class="hidden w-full mx-auto" style="max-width: 400px;">
             <div class="bg-white p-8 rounded-xl shadow-md">
                 <h2 id="auth-title" class="text-2xl font-bold text-center text-gray-800 mb-6">Login</h2>
                 <form id="login-form">
                     <div class="mb-4">
                         <label for="login-email" class="block text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" id="login-email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                        <input type="email" id="login-email" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
                     </div>
                     <div class="mb-6">
                         <label for="login-password" class="block text-sm font-medium text-gray-700">Password</label>
-                        <input type="password" id="login-password" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                        <input type="password" id="login-password" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
                     </div>
                     <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700">Login</button>
                 </form>
                 <form id="signup-form" class="hidden">
                     <div class="mb-4">
                         <label for="signup-email" class="block text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" id="signup-email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                        <input type="email" id="signup-email" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
                     </div>
                     <div class="mb-6">
                         <label for="signup-password" class="block text-sm font-medium text-gray-700">Password</label>
-                        <input type="password" id="signup-password" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="6+ characters" required>
+                        <input type="password" id="signup-password" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="6+ characters" required>
                     </div>
                     <button type="submit" class="w-full bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700">Create Account</button>
                 </form>
@@ -98,7 +238,7 @@
     </div>
 
     <!-- Modal for Adding/Editing Application -->
-    <div id="modal" class="fixed inset-0 z-50 items-center justify-center hidden"><div class="modal-bg fixed inset-0 transition-opacity" aria-hidden="true"></div><div class="bg-white rounded-xl shadow-2xl m-4 w-full max-w-lg transform transition-all relative"><div class="p-6"><div class="flex justify-between items-start"><h3 class="text-2xl font-bold text-gray-800" id="modal-title">Add New Application</h3><button id="close-modal-btn" class="text-gray-400 hover:text-gray-600"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><form id="app-form" class="mt-6 space-y-4"><input type="hidden" id="app-id"><div><label for="app-title" class="block text-sm font-medium text-gray-700">Position / Program Title</label><input type="text" id="app-title" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., PhD in Computer Science" required></div><div><label for="app-link" class="block text-sm font-medium text-gray-700">Application Link (URL)</label><input type="url" id="app-link" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://example.com/apply" required></div><div><label for="app-deadline" class="block text-sm font-medium text-gray-700">Deadline</label><input type="date" id="app-deadline" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required></div><div class="pt-4 flex justify-end space-x-3"><button type="button" id="cancel-modal-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button><button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700">Save Application</button></div></form></div></div></div>
+    <div id="modal" class="fixed inset-0 z-50 items-center justify-center hidden"><div class="modal-bg fixed inset-0 transition-opacity" aria-hidden="true"></div><div class="bg-white rounded-xl shadow-2xl m-4 w-full max-w-lg transform transition-all relative"><div class="p-6"><div class="flex justify-between items-start"><h3 class="text-2xl font-bold text-gray-800" id="modal-title">Add New Application</h3><button id="close-modal-btn" class="text-gray-400 hover:text-gray-600"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><form id="app-form" class="mt-6 space-y-4"><input type="hidden" id="app-id"><div><label for="app-title" class="block text-sm font-medium text-gray-700">Position / Program Title</label><input type="text" id="app-title" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., PhD in Computer Science" required></div><div><label for="app-link" class="block text-sm font-medium text-gray-700">Application Link (URL)</label><input type="url" id="app-link" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://example.com/apply" required></div><div><label for="app-deadline" class="block text-sm font-medium text-gray-700">Deadline</label><input type="date" id="app-deadline" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required></div><div class="pt-4 flex justify-end space-x-3"><button type="button" id="cancel-modal-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button><button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700">Save Application</button></div></form></div></div></div>
 
     <!-- Firebase SDK -->
     <script type="module">
@@ -127,7 +267,6 @@
         const toggleAuthLink = document.getElementById('toggle-auth-link');
         const authTitle = document.getElementById('auth-title');
         const authError = document.getElementById('auth-error');
-        // ... other existing DOM elements ...
         const phdTabBtn = document.getElementById('phd-tab-btn');
         const jobTabBtn = document.getElementById('job-tab-btn');
         const addAppBtn = document.getElementById('add-app-btn');
@@ -135,8 +274,6 @@
         const closeModalBtn = document.getElementById('close-modal-btn');
         const cancelModalBtn = document.getElementById('cancel-modal-btn');
         const appForm = document.getElementById('app-form');
-        const modalTitle = document.getElementById('modal-title');
-        const appIdInput = document.getElementById('app-id');
         const appTitleInput = document.getElementById('app-title');
         const appLinkInput = document.getElementById('app-link');
         const appDeadlineInput = document.getElementById('app-deadline');
@@ -155,23 +292,15 @@
         // --- AUTHENTICATION STATE CONTROLLER ---
         onAuthStateChanged(auth, user => {
             if (user) {
-                // User is signed in
                 currentUserId = user.uid;
-                console.log("User signed in with UID:", currentUserId);
-
                 authContainer.classList.add('hidden');
                 loader.classList.add('hidden');
                 mainContent.classList.remove('hidden');
                 logoutBtn.classList.remove('hidden');
-
                 setupRealtimeListener();
             } else {
-                // User is signed out
                 currentUserId = null;
-                console.log("User is signed out.");
-
-                if (applicationsUnsubscribe) applicationsUnsubscribe(); // Stop listening to old data
-
+                if (applicationsUnsubscribe) applicationsUnsubscribe();
                 mainContent.classList.add('hidden');
                 logoutBtn.classList.add('hidden');
                 loader.classList.add('hidden');
@@ -199,15 +328,7 @@
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
             authError.textContent = '';
-
-            createUserWithEmailAndPassword(auth, email, password)
-                .then(userCredential => {
-                    console.log("Account created:", userCredential.user);
-                })
-                .catch(error => {
-                    console.error("Signup error:", error);
-                    authError.textContent = error.message;
-                });
+            createUserWithEmailAndPassword(auth, email, password).catch(error => authError.textContent = error.message);
         });
 
         loginForm.addEventListener('submit', (e) => {
@@ -215,22 +336,14 @@
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             authError.textContent = '';
-
-            signInWithEmailAndPassword(auth, email, password)
-                .then(userCredential => {
-                    console.log("User logged in:", userCredential.user);
-                })
-                .catch(error => {
-                    console.error("Login error:", error);
-                    authError.textContent = error.message;
-                });
+            signInWithEmailAndPassword(auth, email, password).catch(error => authError.textContent = error.message);
         });
 
         logoutBtn.addEventListener('click', () => {
             signOut(auth).catch(error => console.error("Logout error:", error));
         });
 
-        // --- THE REST OF YOUR APP LOGIC (UNCHANGED) ---
+        // --- APP LOGIC ---
         const appId = firebaseConfig.projectId;
 
         function setupRealtimeListener() {
@@ -240,9 +353,7 @@
             const appsCollectionRef = collection(db, 'artifacts', appId, 'users', currentUserId, 'applications');
             applicationsUnsubscribe = onSnapshot(appsCollectionRef, (snapshot) => {
                 const applications = [];
-                snapshot.forEach(doc => {
-                    applications.push({ id: doc.id, ...doc.data() });
-                });
+                snapshot.forEach(doc => applications.push({ id: doc.id, ...doc.data() }));
                 renderKanbanBoard(applications);
             }, (error) => console.error("Error fetching applications: ", error));
         }
@@ -293,7 +404,7 @@
                 <div class="mt-4 flex flex-wrap gap-2 items-center text-sm">
                     ${app.status === 'to-apply' ? `<button data-action="apply" class="action-btn bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-green-200">Mark as Applied</button>` : ''}
                     ${app.status === 'applied' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Archive</button>` : ''}
-                     ${app.status === 'to-apply' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Not Applying</button>` : ''}
+                    ${app.status === 'to-apply' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Not Applying</button>` : ''}
                     <a href="${app.link}" target="_blank" class="text-indigo-600 hover:underline ml-auto text-xs font-semibold">View Details</a>
                     <button data-action="delete" class="text-gray-400 hover:text-red-500 ml-1">&#128465;</button>
                 </div>`;
