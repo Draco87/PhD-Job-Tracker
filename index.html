@@ -34,6 +34,10 @@
         .justify-end { justify-content: flex-end; }
 
         .w-full { width: 100%; }
+        .h-4 { height: 1rem; }
+        .w-4 { width: 1rem; }
+        .h-6 { height: 1.5rem; }
+        .w-6 { width: 1.5rem; }
         .h-8 { height: 2rem; }
         .w-8 { width: 2.25rem; }
         .max-w-7xl { max-width: 80rem; }
@@ -69,6 +73,7 @@
         .ml-auto { margin-left: auto; }
         
         .space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 1rem; }
+        .space-x-2 > :not([hidden]) ~ :not([hidden]) { margin-left: 0.5rem; }
         .space-x-3 > :not([hidden]) ~ :not([hidden]) { margin-left: 0.75rem; }
         .gap-2 { gap: 0.5rem; }
         .gap-6 { gap: 1.5rem; }
@@ -91,6 +96,7 @@
         .text-gray-900 { color: #111827; }
         .text-white { color: #fff; }
         .text-indigo-600 { color: #4f46e5; }
+        .text-green-600 { color: #16a34a; }
         .text-green-800 { color: #065f46; }
         .text-red-500 { color: #ef4444; }
         .text-red-600 { color: #dc2626; }
@@ -113,7 +119,9 @@
         .rounded-xl { border-radius: 0.75rem; }
         .rounded-full { border-radius: 9999px; }
         .rounded-md { border-radius: 0.375rem; }
+        .rounded { border-radius: 0.25rem; }
 
+        .border { border-width: 1px; }
         .border-b { border-bottom-width: 1px; }
         .border-b-2 { border-bottom-width: 2px; }
         .border-l-4 { border-left-width: 4px; }
@@ -153,6 +161,7 @@
         @media (min-width: 1024px) { .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
         
         input { font-size: 1rem; padding: 0.5rem 0.75rem; border: 1px solid #d1d4d7; }
+        input[type="checkbox"] { padding: 0; }
         button { cursor: pointer; }
         a { color: inherit; text-decoration: inherit; }
 
@@ -241,7 +250,22 @@
     </div>
 
     <!-- Modal for Adding/Editing Application -->
-    <div id="modal" class="fixed inset-0 z-50 items-center justify-center hidden"><div class="modal-bg fixed inset-0 transition-opacity" aria-hidden="true"></div><div class="bg-white rounded-xl shadow-2xl m-4 w-full max-w-lg transform transition-all relative"><div class="p-6"><div class="flex justify-between items-start"><h3 class="text-2xl font-bold text-gray-800" id="modal-title">Add New Application</h3><button id="close-modal-btn" class="text-gray-400 hover:text-gray-600"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><form id="app-form" class="mt-6 space-y-4"><input type="hidden" id="app-id"><div><label for="app-title" class="block text-sm font-medium text-gray-700">Position / Program Title</label><input type="text" id="app-title" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., PhD in Computer Science" required></div><div><label for="app-link" class="block text-sm font-medium text-gray-700">Application Link (URL)</label><input type="url" id="app-link" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://example.com/apply" required></div><div><label for="app-deadline" class="block text-sm font-medium text-gray-700">Deadline</label><input type="date" id="app-deadline" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required></div><div class="pt-4 flex justify-end space-x-3"><button type="button" id="cancel-modal-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button><button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700">Save Application</button></div></form></div></div></div>
+    <div id="modal" class="fixed inset-0 z-50 items-center justify-center hidden"><div class="modal-bg fixed inset-0 transition-opacity" aria-hidden="true"></div><div class="bg-white rounded-xl shadow-2xl m-4 w-full max-w-lg transform transition-all relative"><div class="p-6"><div class="flex justify-between items-start"><h3 class="text-2xl font-bold text-gray-800" id="modal-title">Add New Application</h3><button id="close-modal-btn" class="text-gray-400 hover:text-gray-600"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><form id="app-form" class="mt-6 space-y-4"><input type="hidden" id="app-id"><div><label for="app-title" class="block text-sm font-medium text-gray-700">Position / Program Title</label><input type="text" id="app-title" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., PhD in Computer Science" required></div><div><label for="app-link" class="block text-sm font-medium text-gray-700">Application Link (URL)</label><input type="url" id="app-link" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://example.com/apply" required></div>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <input type="checkbox" id="personal-deadline-checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                    <label for="personal-deadline-checkbox" class="text-sm font-medium text-gray-700">I'll set my own deadline</label>
+                </div>
+            </div>
+            <div id="official-deadline-container">
+                <label for="app-deadline" class="block text-sm font-medium text-gray-700">Official Deadline</label>
+                <input type="date" id="app-deadline" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div id="personal-deadline-container" class="hidden">
+                <label for="personal-deadline" class="block text-sm font-medium text-gray-700">My Personal Deadline</label>
+                <input type="date" id="personal-deadline" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div class="pt-4 flex justify-end space-x-3"><button type="button" id="cancel-modal-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button><button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700">Save Application</button></div></form></div></div></div>
     
     <!-- Modal for Password Reset -->
     <div id="reset-modal" class="fixed inset-0 z-50 items-center justify-center hidden"><div class="modal-bg fixed inset-0 transition-opacity" aria-hidden="true"></div><div class="bg-white rounded-xl shadow-2xl m-4 w-full max-w-lg transform transition-all relative"><div class="p-6"><div class="flex justify-between items-start"><h3 class="text-2xl font-bold text-gray-800">Reset Password</h3><button id="close-reset-modal-btn" class="text-gray-400 hover:text-gray-600"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><form id="reset-form" class="mt-6 space-y-4"><div><label for="reset-email" class="block text-sm font-medium text-gray-700">Enter your account email</label><input type="email" id="reset-email" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required></div><p id="reset-message" class="text-sm text-center"></p><div class="pt-4 flex justify-end space-x-3"><button type="button" id="cancel-reset-modal-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button><button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700">Send Reset Link</button></div></form></div></div></div>
@@ -289,6 +313,10 @@
         const appTitleInput = document.getElementById('app-title');
         const appLinkInput = document.getElementById('app-link');
         const appDeadlineInput = document.getElementById('app-deadline');
+        const personalDeadlineCheckbox = document.getElementById('personal-deadline-checkbox');
+        const officialDeadlineContainer = document.getElementById('official-deadline-container');
+        const personalDeadlineContainer = document.getElementById('personal-deadline-container');
+        const personalDeadlineInput = document.getElementById('personal-deadline');
         
         dayjs.extend(window.dayjs_plugin_relativeTime);
         
@@ -427,36 +455,47 @@
         }
 
         function createApplicationCard(app) {
-            const deadline = dayjs(app.deadline);
-            const now = dayjs();
-            const daysUntilDeadline = deadline.diff(now, 'day');
-            
-            let borderColorClass = 'border-l-4 border-gray-300';
-            if(app.status === 'to-apply'){
-              if (daysUntilDeadline < 0) borderColorClass = 'border-l-4 border-red-500';
-              else if (daysUntilDeadline <= 7) borderColorClass = 'border-l-4 border-yellow-400';
-              else borderColorClass = 'border-l-4 border-green-500';
-            }
-
             const card = document.createElement('div');
+            let borderColorClass = 'border-l-4 border-gray-300'; // Default for no deadline
+            let deadlineHTML = `<p class="text-sm text-gray-500 mt-1">No deadline set</p>`;
+
+            if (app.deadline) {
+                const deadline = dayjs(app.deadline);
+                const now = dayjs();
+                const daysUntilDeadline = deadline.diff(now, 'day');
+                const deadlineType = app.deadlineType === 'personal' ? '(My Deadline)' : '(Official)';
+                
+                if(app.status === 'to-apply'){
+                  if (daysUntilDeadline < 0) borderColorClass = 'border-l-4 border-red-500';
+                  else if (daysUntilDeadline <= 7) borderColorClass = 'border-l-4 border-yellow-400';
+                  else borderColorClass = 'border-l-4 border-green-500';
+                }
+                
+                deadlineHTML = `
+                    <p class="text-sm text-gray-500 mt-1">Deadline: ${deadline.format('MMMM D, YYYY')} <span class="text-xs text-gray-400">${deadlineType}</span>
+                        <br><span class="font-medium ${daysUntilDeadline < 0 ? 'text-red-600' : 'text-gray-600'}">${deadline.fromNow()}</span>
+                    </p>`;
+            }
+            
             card.className = `bg-white p-4 rounded-lg shadow-sm ${borderColorClass}`;
             card.innerHTML = `
                 <h3 class="font-bold text-md text-gray-900">${app.title || 'Untitled Application'}</h3>
-                <p class="text-sm text-gray-500 mt-1">Deadline: ${deadline.format('MMMM D, YYYY')}
-                    <span class="font-medium ${daysUntilDeadline < 0 ? 'text-red-600' : 'text-gray-600'}">(${deadline.fromNow()})</span>
-                </p>
+                ${deadlineHTML}
                 <div class="mt-4 flex flex-wrap gap-2 items-center text-sm">
                     ${app.status === 'to-apply' ? `<button data-action="apply" class="action-btn bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-green-200">Mark as Applied</button>` : ''}
                     ${app.status === 'applied' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Archive</button>` : ''}
                     ${app.status === 'to-apply' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Not Applying</button>` : ''}
                     <a href="${app.link}" target="_blank" class="text-indigo-600 hover:underline ml-auto text-xs font-semibold">View Details</a>
-                    <button data-action="delete" class="text-gray-400 hover:text-red-500 ml-1">&#128465;</button>
+                    <button data-action="delete" class="text-gray-400 hover:text-red-500 ml-1 p-1">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                    </button>
                 </div>`;
             
             card.querySelectorAll('.action-btn, [data-action="delete"]').forEach(button => {
                  button.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    handleCardAction(app.id, e.target.dataset.action, e);
+                    const targetButton = e.target.closest('button');
+                    handleCardAction(app.id, targetButton.dataset.action, e);
                 });
             });
             return card;
@@ -483,9 +522,18 @@
 
         async function saveApplication(e) {
             e.preventDefault();
+            const isPersonal = personalDeadlineCheckbox.checked;
+            const deadlineValue = isPersonal ? personalDeadlineInput.value : appDeadlineInput.value;
+
             const data = {
-                title: appTitleInput.value, link: appLinkInput.value, deadline: appDeadlineInput.value,
-                type: currentTab, status: 'to-apply', updatedAt: serverTimestamp(), createdAt: serverTimestamp()
+                title: appTitleInput.value, 
+                link: appLinkInput.value, 
+                deadline: deadlineValue || null,
+                deadlineType: deadlineValue ? (isPersonal ? 'personal' : 'official') : null,
+                type: currentTab, 
+                status: 'to-apply', 
+                updatedAt: serverTimestamp(), 
+                createdAt: serverTimestamp()
             };
             try {
                 await addDoc(collection(db, 'artifacts', appId, 'users', currentUserId, 'applications'), data);
@@ -493,7 +541,14 @@
             } catch (error) { console.error("Error saving application: ", error); }
         }
 
-        function openModal() { appForm.reset(); modal.classList.remove('hidden'); modal.classList.add('flex'); }
+        function openModal() {
+            appForm.reset();
+            personalDeadlineCheckbox.checked = false;
+            officialDeadlineContainer.classList.remove('hidden');
+            personalDeadlineContainer.classList.add('hidden');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
         function closeModal() { modal.classList.add('hidden'); modal.classList.remove('flex'); }
 
         function switchTab(tab) {
@@ -520,6 +575,15 @@
         appForm.addEventListener('submit', saveApplication);
         phdTabBtn.addEventListener('click', () => switchTab('phd'));
         jobTabBtn.addEventListener('click', () => switchTab('job'));
+        personalDeadlineCheckbox.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                officialDeadlineContainer.classList.add('hidden');
+                personalDeadlineContainer.classList.remove('hidden');
+            } else {
+                officialDeadlineContainer.classList.remove('hidden');
+                personalDeadlineContainer.classList.add('hidden');
+            }
+        });
         
     </script>
 </body>
