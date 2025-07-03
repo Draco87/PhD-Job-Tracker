@@ -164,7 +164,7 @@
         
         input { font-size: 1rem; padding: 0.5rem 0.75rem; border: 1px solid #d1d4d7; }
         input[type="checkbox"] { padding: 0; }
-        button { cursor: pointer; }
+        button { cursor: pointer; background-color: transparent; border: none;}
         a { color: inherit; text-decoration: inherit; }
 
     </style>
@@ -490,11 +490,11 @@
                     ${app.status === 'applied' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Archive</button>` : ''}
                     ${app.status === 'to-apply' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Not Applying</button>` : ''}
                     <a href="${app.link}" target="_blank" class="text-indigo-600 hover:underline ml-auto text-xs font-semibold">View Details</a>
-                    <button data-action="edit" class="text-gray-400 hover:text-indigo-500 p-1">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    <button data-action="edit" class="text-gray-400 hover:text-indigo-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
                     </button>
-                    <button data-action="delete" class="text-gray-400 hover:text-red-500 p-1">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    <button data-action="delete" class="text-gray-400 hover:text-red-500">
+                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                 </div>`;
             
@@ -538,30 +538,31 @@
             const isPersonal = personalDeadlineCheckbox.checked;
             const deadlineValue = isPersonal ? personalDeadlineInput.value : appDeadlineInput.value;
 
-            const data = {
-                title: appTitleInput.value, 
-                link: appLinkInput.value, 
+            const dataToSave = {
+                title: appTitleInput.value,
+                link: appLinkInput.value,
                 deadline: deadlineValue || null,
                 deadlineType: deadlineValue ? (isPersonal ? 'personal' : 'official') : null,
-                type: currentTab, 
-                status: 'to-apply', 
                 updatedAt: serverTimestamp()
             };
 
             try {
-                if (id) { // Editing existing application
+                if (id) {
+                    // This is an EDIT. We only update the fields that have changed.
                     const appRef = doc(db, 'artifacts', appId, 'users', currentUserId, 'applications', id);
-                    // Don't overwrite status when editing
-                    const existingApp = allApplications.find(app => app.id === id);
-                    if(existingApp) data.status = existingApp.status;
-                    
-                    await updateDoc(appRef, data);
-                } else { // Creating new application
-                    data.createdAt = serverTimestamp();
-                    await addDoc(collection(db, 'artifacts', appId, 'users', currentUserId, 'applications'), data);
+                    await updateDoc(appRef, dataToSave);
+                } else {
+                    // This is a NEW application. We add the initial status and type.
+                    dataToSave.status = 'to-apply';
+                    dataToSave.type = currentTab;
+                    dataToSave.createdAt = serverTimestamp();
+                    await addDoc(collection(db, 'artifacts', appId, 'users', currentUserId, 'applications'), dataToSave);
                 }
                 closeModal();
-            } catch (error) { console.error("Error saving application: ", error); }
+            } catch (error) {
+                console.error("Error saving application: ", error);
+                alert("Could not save application. Please check the console for details.");
+            }
         }
         
         function openEditModal(app) {
