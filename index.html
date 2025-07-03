@@ -308,6 +308,7 @@
         const phdTabBtn = document.getElementById('phd-tab-btn');
         const jobTabBtn = document.getElementById('job-tab-btn');
         const addAppBtn = document.getElementById('add-app-btn');
+        const kanbanBoard = document.getElementById('kanban-board');
         const modal = document.getElementById('modal');
         const closeModalBtn = document.getElementById('close-modal-btn');
         const cancelModalBtn = document.getElementById('cancel-modal-btn');
@@ -460,6 +461,7 @@
 
         function createApplicationCard(app) {
             const card = document.createElement('div');
+            card.dataset.id = app.id;
             let borderColorClass = 'border-l-4 border-gray-300'; // Default for no deadline
             let deadlineHTML = `<p class="text-sm text-gray-500 mt-1">No deadline set</p>`;
 
@@ -491,20 +493,13 @@
                     ${app.status === 'to-apply' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Not Applying</button>` : ''}
                     <a href="${app.link}" target="_blank" class="text-indigo-600 hover:underline ml-auto text-xs font-semibold">View Details</a>
                     <button data-action="edit" class="text-gray-400 hover:text-indigo-500">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
+                        <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
                     </button>
                     <button data-action="delete" class="text-gray-400 hover:text-red-500">
-                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                         <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                 </div>`;
             
-            card.querySelectorAll('button[data-action]').forEach(button => {
-                 button.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const targetButton = e.target.closest('button');
-                    handleCardAction(app.id, targetButton.dataset.action, e);
-                });
-            });
             return card;
         }
 
@@ -547,12 +542,10 @@
             };
 
             try {
-                if (id) {
-                    // This is an EDIT. We only update the fields that have changed.
+                if (id) { // Editing existing application
                     const appRef = doc(db, 'artifacts', appId, 'users', currentUserId, 'applications', id);
                     await updateDoc(appRef, dataToSave);
-                } else {
-                    // This is a NEW application. We add the initial status and type.
+                } else { // Creating new application
                     dataToSave.status = 'to-apply';
                     dataToSave.type = currentTab;
                     dataToSave.createdAt = serverTimestamp();
@@ -574,14 +567,13 @@
 
             const isPersonal = app.deadlineType === 'personal';
             personalDeadlineCheckbox.checked = isPersonal;
+            
+            officialDeadlineContainer.classList.toggle('hidden', isPersonal);
+            personalDeadlineContainer.classList.toggle('hidden', !isPersonal);
 
             if (isPersonal) {
-                officialDeadlineContainer.classList.add('hidden');
-                personalDeadlineContainer.classList.remove('hidden');
                 personalDeadlineInput.value = app.deadline;
             } else {
-                officialDeadlineContainer.classList.remove('hidden');
-                personalDeadlineContainer.classList.add('hidden');
                 appDeadlineInput.value = app.deadline;
             }
 
@@ -626,13 +618,23 @@
         phdTabBtn.addEventListener('click', () => switchTab('phd'));
         jobTabBtn.addEventListener('click', () => switchTab('job'));
         personalDeadlineCheckbox.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                officialDeadlineContainer.classList.add('hidden');
-                personalDeadlineContainer.classList.remove('hidden');
-            } else {
-                officialDeadlineContainer.classList.remove('hidden');
-                personalDeadlineContainer.classList.add('hidden');
-            }
+            officialDeadlineContainer.classList.toggle('hidden', e.target.checked);
+            personalDeadlineContainer.classList.toggle('hidden', !e.target.checked);
+        });
+
+        // ROBUST EVENT LISTENER FOR KANBAN BOARD
+        kanbanBoard.addEventListener('click', (e) => {
+            const targetButton = e.target.closest('button[data-action]');
+            if (!targetButton) return;
+
+            e.stopPropagation();
+
+            const action = targetButton.dataset.action;
+            const card = e.target.closest('div[data-id]');
+            if (!card) return;
+            
+            const id = card.dataset.id;
+            handleCardAction(id, action, e);
         });
         
     </script>
