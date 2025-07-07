@@ -251,26 +251,78 @@
         </main>
     </div>
 
-    <!-- Modal for Adding/Editing Application -->
-    <div id="modal" class="fixed inset-0 z-50 items-center justify-center hidden"><div class="modal-bg fixed inset-0 transition-opacity" aria-hidden="true"></div><div class="bg-white rounded-xl shadow-2xl m-4 w-full max-w-lg transform transition-all relative"><div class="p-6"><div class="flex justify-between items-start"><h3 class="text-2xl font-bold text-gray-800" id="modal-title">Add New Application</h3><button id="close-modal-btn" class="text-gray-400 hover:text-gray-600"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><form id="app-form" class="mt-6 space-y-4"><input type="hidden" id="app-id"><div><label for="app-title" class="block text-sm font-medium text-gray-700">Position / Program Title</label><input type="text" id="app-title" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., PhD in Computer Science" required></div><div><label for="app-link" class="block text-sm font-medium text-gray-700">Application Link (URL)</label><input type="url" id="app-link" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://example.com/apply" required></div>
-            <div>
-                <div class="flex items-center space-x-2">
-                    <input type="checkbox" id="personal-deadline-checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="personal-deadline-checkbox" class="text-sm font-medium text-gray-700">I'll set my own deadline</label>
+    <!-- Modal for Adding Application -->
+    <div id="modal" class="fixed inset-0 z-50 items-center justify-center hidden">
+        <div class="modal-bg fixed inset-0 transition-opacity" aria-hidden="true"></div>
+        <div class="bg-white rounded-xl shadow-2xl m-4 w-full max-w-lg transform transition-all relative">
+            <div class="p-6">
+                <div class="flex justify-between items-start">
+                    <h3 class="text-2xl font-bold text-gray-800" id="modal-title">Add New Application</h3>
+                    <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
                 </div>
+                <form id="app-form" class="mt-6 space-y-4">
+                    <div>
+                        <label for="app-title" class="block text-sm font-medium text-gray-700">Position / Program Title</label>
+                        <input type="text" id="app-title" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., PhD in Computer Science" required>
+                    </div>
+                    <div>
+                        <label for="app-link" class="block text-sm font-medium text-gray-700">Application Link (URL)</label>
+                        <input type="url" id="app-link" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://example.com/apply" required>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" id="personal-deadline-checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                            <label for="personal-deadline-checkbox" class="text-sm font-medium text-gray-700">I'll set my own deadline</label>
+                        </div>
+                    </div>
+                    <div id="official-deadline-container">
+                        <label for="app-deadline" class="block text-sm font-medium text-gray-700">Official Deadline</label>
+                        <input type="date" id="app-deadline" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div id="personal-deadline-container" class="hidden">
+                        <label for="personal-deadline" class="block text-sm font-medium text-gray-700">My Personal Deadline</label>
+                        <input type="date" id="personal-deadline" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="pt-4 flex justify-end space-x-3">
+                        <button type="button" id="cancel-modal-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button>
+                        <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700">Save Application</button>
+                    </div>
+                </form>
             </div>
-            <div id="official-deadline-container">
-                <label for="app-deadline" class="block text-sm font-medium text-gray-700">Official Deadline</label>
-                <input type="date" id="app-deadline" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-            </div>
-            <div id="personal-deadline-container" class="hidden">
-                <label for="personal-deadline" class="block text-sm font-medium text-gray-700">My Personal Deadline</label>
-                <input type="date" id="personal-deadline" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-            </div>
-            <div class="pt-4 flex justify-end space-x-3"><button type="button" id="cancel-modal-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button><button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700">Save Application</button></div></form></div></div></div>
+        </div>
+    </div>
     
     <!-- Modal for Password Reset -->
-    <div id="reset-modal" class="fixed inset-0 z-50 items-center justify-center hidden"><div class="modal-bg fixed inset-0 transition-opacity" aria-hidden="true"></div><div class="bg-white rounded-xl shadow-2xl m-4 w-full max-w-lg transform transition-all relative"><div class="p-6"><div class="flex justify-between items-start"><h3 class="text-2xl font-bold text-gray-800">Reset Password</h3><button id="close-reset-modal-btn" class="text-gray-400 hover:text-gray-600"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><form id="reset-form" class="mt-6 space-y-4"><div><label for="reset-email" class="block text-sm font-medium text-gray-700">Enter your account email</label><input type="email" id="reset-email" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required></div><p id="reset-message" class="text-sm text-center"></p><div class="pt-4 flex justify-end space-x-3"><button type="button" id="cancel-reset-modal-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button><button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700">Send Reset Link</button></div></form></div></div></div>
+    <div id="reset-modal" class="fixed inset-0 z-50 items-center justify-center hidden">
+        <div class="modal-bg fixed inset-0 transition-opacity" aria-hidden="true"></div>
+        <div class="bg-white rounded-xl shadow-2xl m-4 w-full max-w-lg transform transition-all relative">
+            <div class="p-6">
+                <div class="flex justify-between items-start">
+                    <h3 class="text-2xl font-bold text-gray-800">Reset Password</h3>
+                    <button id="close-reset-modal-btn" class="text-gray-400 hover:text-gray-600">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <form id="reset-form" class="mt-6 space-y-4">
+                    <div>
+                        <label for="reset-email" class="block text-sm font-medium text-gray-700">Enter your account email</label>
+                        <input type="email" id="reset-email" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <p id="reset-message" class="text-sm text-center"></p>
+                    <div class="pt-4 flex justify-end space-x-3">
+                        <button type="button" id="cancel-reset-modal-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button>
+                        <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700">Send Reset Link</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Firebase SDK -->
     <script type="module">
@@ -313,7 +365,7 @@
         const closeModalBtn = document.getElementById('close-modal-btn');
         const cancelModalBtn = document.getElementById('cancel-modal-btn');
         const appForm = document.getElementById('app-form');
-        const appIdInput = document.getElementById('app-id');
+        const modalTitle = document.getElementById('modal-title');
         const appTitleInput = document.getElementById('app-title');
         const appLinkInput = document.getElementById('app-link');
         const appDeadlineInput = document.getElementById('app-deadline');
@@ -332,7 +384,7 @@
         let currentUserId = null;
         let applicationsUnsubscribe = null;
         let currentTab = 'phd';
-        let allApplications = []; // Cache for editing
+        let allApplications = []; // Cache for applications data
 
         // --- AUTHENTICATION STATE CONTROLLER ---
         onAuthStateChanged(auth, user => {
@@ -545,6 +597,7 @@
         }
         
         function openModal() {
+            // Reset form and show modal for adding new application
             appForm.reset();
             modalTitle.textContent = "Add New Application";
             personalDeadlineCheckbox.checked = false;
@@ -553,7 +606,11 @@
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         }
-        function closeModal() { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+
+        function closeModal() { 
+            modal.classList.add('hidden'); 
+            modal.classList.remove('flex'); 
+        }
 
         function switchTab(tab) {
             currentTab = tab;
@@ -584,7 +641,7 @@
             personalDeadlineContainer.classList.toggle('hidden', !e.target.checked);
         });
 
-        // ROBUST EVENT LISTENER FOR KANBAN BOARD
+        // Event delegation for kanban board actions
         kanbanBoard.addEventListener('click', (e) => {
             const targetButton = e.target.closest('button[data-action]');
             if (!targetButton) return;
@@ -598,7 +655,6 @@
             const id = card.dataset.id;
             handleCardAction(id, action, e);
         });
-        
     </script>
 </body>
 </html>
