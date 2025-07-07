@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Application Tracker</title>
-    <!-- REMOVED: <script src="https://cdn.tailwindcss.com"></script> -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/plugin/relativeTime.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <style>
         /* --- Embedded Tailwind CSS --- */
-        /* This CSS is generated from the classes used in the app to make it self-contained. */
-        :root { --tw-border-spacing-x: 0; --tw-border-spacing-y: 0; /* ... other root variables */ }
+        :root { --tw-border-spacing-x: 0; --tw-border-spacing-y: 0; }
         *, ::before, ::after { box-sizing: border-box; border-width: 0; border-style: solid; border-color: #e5e7eb; }
         html { line-height: 1.5; -webkit-text-size-adjust: 100%; -moz-tab-size: 4; tab-size: 4; font-family: 'Inter', sans-serif; }
         body { margin: 0; line-height: inherit; font-family: 'Inter', sans-serif; }
@@ -166,11 +164,9 @@
         input[type="checkbox"] { padding: 0; }
         button { cursor: pointer; background-color: transparent; border: none;}
         a { color: inherit; text-decoration: inherit; }
-
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
-
     <!-- Main App Container -->
     <div id="app-container" class="p-4 md:p-8 max-w-7xl mx-auto">
         <!-- Header -->
@@ -340,7 +336,6 @@
             messagingSenderId: "369937033868",
             appId: "1:369937033868:web:c5744d9b030a0b394629a9"
         };
-        // END OF CONFIGURATION SECTION
 
         // --- DOM ELEMENTS ---
         const loader = document.getElementById('loader');
@@ -386,7 +381,7 @@
         let currentUserId = null;
         let applicationsUnsubscribe = null;
         let currentTab = 'phd';
-        let allApplications = []; // Cache for applications data
+        let allApplications = [];
 
         // --- AUTHENTICATION STATE CONTROLLER ---
         onAuthStateChanged(auth, user => {
@@ -516,7 +511,7 @@
         function createApplicationCard(app) {
             const card = document.createElement('div');
             card.dataset.id = app.id;
-            let borderColorClass = 'border-l-4 border-gray-300'; // Default for no deadline
+            let borderColorClass = 'border-l-4 border-gray-300';
             let deadlineHTML = `<p class="text-sm text-gray-500 mt-1">No deadline set</p>`;
 
             if (app.deadline) {
@@ -545,10 +540,14 @@
                     ${app.status === 'to-apply' ? `<button data-action="apply" class="action-btn bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-green-200">Mark as Applied</button>` : ''}
                     ${app.status === 'applied' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Archive</button>` : ''}
                     ${app.status === 'to-apply' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Not Applying</button>` : ''}
-                    <button data-action="edit" class="text-indigo-600 hover:underline text-xs font-semibold">Edit</button>
+                    <button data-action="edit" class="text-gray-400 hover:text-indigo-500">
+                        <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                    </button>
                     <a href="${app.link}" target="_blank" class="text-indigo-600 hover:underline text-xs font-semibold">View Details</a>
                     <button data-action="delete" class="text-gray-400 hover:text-red-500 ml-auto">
-                         <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                 </div>`;
             
@@ -584,7 +583,6 @@
             appTitleInput.value = application.title || '';
             appLinkInput.value = application.link || '';
             
-            // Handle deadline fields
             if (application.deadline) {
                 const isPersonal = application.deadlineType === 'personal';
                 personalDeadlineCheckbox.checked = isPersonal;
@@ -638,11 +636,9 @@
 
             try {
                 if (appIdValue) {
-                    // Update existing application
                     const appRef = doc(db, 'artifacts', appId, 'users', currentUserId, 'applications', appIdValue);
                     await updateDoc(appRef, dataToSave);
                 } else {
-                    // Create new application
                     dataToSave.status = 'to-apply';
                     dataToSave.createdAt = serverTimestamp();
                     await addDoc(collection(db, 'artifacts', appId, 'users', currentUserId, 'applications'), dataToSave);
