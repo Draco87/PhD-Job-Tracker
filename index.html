@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Application Tracker</title>
+    <!-- REMOVED: <script src="https://cdn.tailwindcss.com"></script> -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/plugin/relativeTime.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <style>
         /* --- Embedded Tailwind CSS --- */
-        :root { --tw-border-spacing-x: 0; --tw-border-spacing-y: 0; }
+        /* This CSS is generated from the classes used in the app to make it self-contained. */
+        :root { --tw-border-spacing-x: 0; --tw-border-spacing-y: 0; /* ... other root variables */ }
         *, ::before, ::after { box-sizing: border-box; border-width: 0; border-style: solid; border-color: #e5e7eb; }
         html { line-height: 1.5; -webkit-text-size-adjust: 100%; -moz-tab-size: 4; tab-size: 4; font-family: 'Inter', sans-serif; }
         body { margin: 0; line-height: inherit; font-family: 'Inter', sans-serif; }
@@ -164,9 +166,11 @@
         input[type="checkbox"] { padding: 0; }
         button { cursor: pointer; background-color: transparent; border: none;}
         a { color: inherit; text-decoration: inherit; }
+
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
+
     <!-- Main App Container -->
     <div id="app-container" class="p-4 md:p-8 max-w-7xl mx-auto">
         <!-- Header -->
@@ -248,78 +252,25 @@
     </div>
 
     <!-- Modal for Adding/Editing Application -->
-    <div id="modal" class="fixed inset-0 z-50 items-center justify-center hidden">
-        <div class="modal-bg fixed inset-0 transition-opacity" aria-hidden="true"></div>
-        <div class="bg-white rounded-xl shadow-2xl m-4 w-full max-w-lg transform transition-all relative">
-            <div class="p-6">
-                <div class="flex justify-between items-start">
-                    <h3 class="text-2xl font-bold text-gray-800" id="modal-title">Add New Application</h3>
-                    <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
+    <div id="modal" class="fixed inset-0 z-50 items-center justify-center hidden"><div class="modal-bg fixed inset-0 transition-opacity" aria-hidden="true"></div><div class="bg-white rounded-xl shadow-2xl m-4 w-full max-w-lg transform transition-all relative"><div class="p-6"><div class="flex justify-between items-start"><h3 class="text-2xl font-bold text-gray-800" id="modal-title">Add New Application</h3><button id="close-modal-btn" class="text-gray-400 hover:text-gray-600"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><form id="app-form" class="mt-6 space-y-4"><input type="hidden" id="app-id"><div><label for="app-title" class="block text-sm font-medium text-gray-700">Position / Program Title</label><input type="text" id="app-title" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., PhD in Computer Science" required></div><div><label for="app-link" class="block text-sm font-medium text-gray-700">Application Link (URL)</label><input type="url" id="app-link" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://example.com/apply" required></div>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <input type="checkbox" id="personal-deadline-checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                    <label for="personal-deadline-checkbox" class="text-sm font-medium text-gray-700">I'll set my own deadline</label>
                 </div>
-                <form id="app-form" class="mt-6 space-y-4">
-                    <input type="hidden" id="app-id">
-                    <div>
-                        <label for="app-title" class="block text-sm font-medium text-gray-700">Position / Program Title</label>
-                        <input type="text" id="app-title" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., PhD in Computer Science" required>
-                    </div>
-                    <div>
-                        <label for="app-link" class="block text-sm font-medium text-gray-700">Application Link (URL)</label>
-                        <input type="url" id="app-link" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://example.com/apply" required>
-                    </div>
-                    <div>
-                        <div class="flex items-center space-x-2">
-                            <input type="checkbox" id="personal-deadline-checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                            <label for="personal-deadline-checkbox" class="text-sm font-medium text-gray-700">I'll set my own deadline</label>
-                        </div>
-                    </div>
-                    <div id="official-deadline-container">
-                        <label for="app-deadline" class="block text-sm font-medium text-gray-700">Official Deadline</label>
-                        <input type="date" id="app-deadline" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
-                    <div id="personal-deadline-container" class="hidden">
-                        <label for="personal-deadline" class="block text-sm font-medium text-gray-700">My Personal Deadline</label>
-                        <input type="date" id="personal-deadline" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
-                    <div class="pt-4 flex justify-end space-x-3">
-                        <button type="button" id="cancel-modal-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button>
-                        <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700">Save Application</button>
-                    </div>
-                </form>
             </div>
-        </div>
-    </div>
+            <div id="official-deadline-container">
+                <label for="app-deadline" class="block text-sm font-medium text-gray-700">Official Deadline</label>
+                <input type="date" id="app-deadline" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div id="personal-deadline-container" class="hidden">
+                <label for="personal-deadline" class="block text-sm font-medium text-gray-700">My Personal Deadline</label>
+                <input type="date" id="personal-deadline" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div class="pt-4 flex justify-end space-x-3"><button type="button" id="cancel-modal-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button><button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700">Save Application</button></div></form></div></div></div>
     
     <!-- Modal for Password Reset -->
-    <div id="reset-modal" class="fixed inset-0 z-50 items-center justify-center hidden">
-        <div class="modal-bg fixed inset-0 transition-opacity" aria-hidden="true"></div>
-        <div class="bg-white rounded-xl shadow-2xl m-4 w-full max-w-lg transform transition-all relative">
-            <div class="p-6">
-                <div class="flex justify-between items-start">
-                    <h3 class="text-2xl font-bold text-gray-800">Reset Password</h3>
-                    <button id="close-reset-modal-btn" class="text-gray-400 hover:text-gray-600">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-                <form id="reset-form" class="mt-6 space-y-4">
-                    <div>
-                        <label for="reset-email" class="block text-sm font-medium text-gray-700">Enter your account email</label>
-                        <input type="email" id="reset-email" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
-                    </div>
-                    <p id="reset-message" class="text-sm text-center"></p>
-                    <div class="pt-4 flex justify-end space-x-3">
-                        <button type="button" id="cancel-reset-modal-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button>
-                        <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700">Send Reset Link</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <div id="reset-modal" class="fixed inset-0 z-50 items-center justify-center hidden"><div class="modal-bg fixed inset-0 transition-opacity" aria-hidden="true"></div><div class="bg-white rounded-xl shadow-2xl m-4 w-full max-w-lg transform transition-all relative"><div class="p-6"><div class="flex justify-between items-start"><h3 class="text-2xl font-bold text-gray-800">Reset Password</h3><button id="close-reset-modal-btn" class="text-gray-400 hover:text-gray-600"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><form id="reset-form" class="mt-6 space-y-4"><div><label for="reset-email" class="block text-sm font-medium text-gray-700">Enter your account email</label><input type="email" id="reset-email" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required></div><p id="reset-message" class="text-sm text-center"></p><div class="pt-4 flex justify-end space-x-3"><button type="button" id="cancel-reset-modal-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button><button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700">Send Reset Link</button></div></form></div></div></div>
 
     <!-- Firebase SDK -->
     <script type="module">
@@ -336,6 +287,7 @@
             messagingSenderId: "369937033868",
             appId: "1:369937033868:web:c5744d9b030a0b394629a9"
         };
+        // END OF CONFIGURATION SECTION
 
         // --- DOM ELEMENTS ---
         const loader = document.getElementById('loader');
@@ -536,19 +488,21 @@
             card.innerHTML = `
                 <h3 class="font-bold text-md text-gray-900">${app.title || 'Untitled Application'}</h3>
                 ${deadlineHTML}
-                <div class="mt-4 flex flex-wrap gap-2 items-center text-sm">
-                    ${app.status === 'to-apply' ? `<button data-action="apply" class="action-btn bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-green-200">Mark as Applied</button>` : ''}
-                    ${app.status === 'applied' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Archive</button>` : ''}
-                    ${app.status === 'to-apply' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Not Applying</button>` : ''}
-                    <button data-action="edit" class="text-gray-400 hover:text-indigo-500">
-                        <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                        </svg>
-                    </button>
-                    <a href="${app.link}" target="_blank" class="text-indigo-600 hover:underline text-xs font-semibold">View Details</a>
-                    <button data-action="delete" class="text-gray-400 hover:text-red-500 ml-auto">
-                        <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    </button>
+                <div class="mt-4 flex items-center text-sm">
+                    <div class="flex flex-wrap gap-2">
+                        ${app.status === 'to-apply' ? `<button data-action="apply" class="action-btn bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-green-200">Mark as Applied</button>` : ''}
+                        ${app.status === 'applied' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Archive</button>` : ''}
+                        ${app.status === 'to-apply' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Not Applying</button>` : ''}
+                    </div>
+                    <div class="ml-auto flex items-center space-x-2">
+                        <a href="${app.link || '#'}" target="_blank" class="text-indigo-600 hover:underline text-xs font-semibold">View Details</a>
+                        <button data-action="edit" class="text-gray-400 hover:text-indigo-500">
+                            <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
+                        </button>
+                        <button data-action="delete" class="text-gray-400 hover:text-red-500">
+                            <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
                 </div>`;
             
             return card;
@@ -556,8 +510,6 @@
 
         async function handleCardAction(id, action, event) {
              const appRef = doc(db, 'artifacts', appId, 'users', currentUserId, 'applications', id);
-             const application = allApplications.find(app => app.id === id);
-             
              try {
                 if (action === 'apply') {
                     if (window.confetti && event) {
@@ -567,79 +519,40 @@
                     await updateDoc(appRef, { status: 'applied' });
                 } else if (action === 'archive') {
                     await updateDoc(appRef, { status: 'archived' });
-                } else if (action === 'edit') {
-                    openEditModal(application);
                 } else if (action === 'delete') {
                     if (confirm('Are you sure you want to delete this application? This cannot be undone.')) {
                         await deleteDoc(appRef);
+                    }
+                } else if (action === 'edit') {
+                    const appToEdit = allApplications.find(app => app.id === id);
+                    if (appToEdit) {
+                        openEditModal(appToEdit);
                     }
                 }
              } catch(error) { console.error(`Failed to ${action} application:`, error); }
         }
 
-        function openEditModal(application) {
-            modalTitle.textContent = "Edit Application";
-            appIdInput.value = application.id;
-            appTitleInput.value = application.title || '';
-            appLinkInput.value = application.link || '';
-            
-            if (application.deadline) {
-                const isPersonal = application.deadlineType === 'personal';
-                personalDeadlineCheckbox.checked = isPersonal;
-                
-                if (isPersonal) {
-                    personalDeadlineInput.value = application.deadline;
-                    officialDeadlineContainer.classList.add('hidden');
-                    personalDeadlineContainer.classList.remove('hidden');
-                } else {
-                    appDeadlineInput.value = application.deadline;
-                    officialDeadlineContainer.classList.remove('hidden');
-                    personalDeadlineContainer.classList.add('hidden');
-                }
-            } else {
-                personalDeadlineCheckbox.checked = false;
-                officialDeadlineContainer.classList.remove('hidden');
-                personalDeadlineContainer.classList.add('hidden');
-                appDeadlineInput.value = '';
-                personalDeadlineInput.value = '';
-            }
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function openAddModal() {
-            modalTitle.textContent = "Add New Application";
-            appForm.reset();
-            appIdInput.value = '';
-            personalDeadlineCheckbox.checked = false;
-            officialDeadlineContainer.classList.remove('hidden');
-            personalDeadlineContainer.classList.add('hidden');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
         async function saveApplication(e) {
             e.preventDefault();
+            const id = appIdInput.value;
             const isPersonal = personalDeadlineCheckbox.checked;
             const deadlineValue = isPersonal ? personalDeadlineInput.value : appDeadlineInput.value;
-            const appIdValue = appIdInput.value;
 
             const dataToSave = {
                 title: appTitleInput.value,
                 link: appLinkInput.value,
                 deadline: deadlineValue || null,
                 deadlineType: deadlineValue ? (isPersonal ? 'personal' : 'official') : null,
-                type: currentTab,
                 updatedAt: serverTimestamp()
             };
 
             try {
-                if (appIdValue) {
-                    const appRef = doc(db, 'artifacts', appId, 'users', currentUserId, 'applications', appIdValue);
+                if (id) {
+                    const appRef = doc(db, 'artifacts', appId, 'users', currentUserId, 'applications', id);
                     await updateDoc(appRef, dataToSave);
                 } else {
                     dataToSave.status = 'to-apply';
+                    dataToSave.type = currentTab;
                     dataToSave.createdAt = serverTimestamp();
                     await addDoc(collection(db, 'artifacts', appId, 'users', currentUserId, 'applications'), dataToSave);
                 }
@@ -650,9 +563,43 @@
             }
         }
         
-        function closeModal() { 
-            modal.classList.add('hidden'); 
-            modal.classList.remove('flex'); 
+        function openEditModal(app) {
+            appForm.reset();
+            modalTitle.textContent = "Edit Application";
+            appIdInput.value = app.id;
+            appTitleInput.value = app.title;
+            appLinkInput.value = app.link;
+
+            const isPersonal = app.deadlineType === 'personal';
+            personalDeadlineCheckbox.checked = isPersonal;
+            
+            officialDeadlineContainer.classList.toggle('hidden', isPersonal);
+            personalDeadlineContainer.classList.toggle('hidden', !isPersonal);
+
+            if (isPersonal) {
+                personalDeadlineInput.value = app.deadline;
+            } else {
+                appDeadlineInput.value = app.deadline;
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function openAddModal() {
+            appForm.reset();
+            modalTitle.textContent = "Add New Application";
+            appIdInput.value = '';
+            personalDeadlineCheckbox.checked = false;
+            officialDeadlineContainer.classList.remove('hidden');
+            personalDeadlineContainer.classList.add('hidden');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
 
         function switchTab(tab) {
@@ -684,7 +631,7 @@
             personalDeadlineContainer.classList.toggle('hidden', !e.target.checked);
         });
 
-        // Event delegation for kanban board actions
+        // ROBUST EVENT LISTENER FOR KANBAN BOARD
         kanbanBoard.addEventListener('click', (e) => {
             const targetButton = e.target.closest('button[data-action]');
             if (!targetButton) return;
@@ -698,6 +645,7 @@
             const id = card.dataset.id;
             handleCardAction(id, action, e);
         });
+        
     </script>
 </body>
 </html>
