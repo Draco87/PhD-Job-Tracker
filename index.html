@@ -607,6 +607,12 @@
                     <p class="text-sm text-gray-500 mt-1">Deadline: ${deadline.format('MMMM D, YYYY')} <span class="text-xs text-gray-400">${deadlineType}</span>
                         <br><span class="font-medium ${daysUntilDeadline < 0 ? 'text-red-600' : 'text-gray-600'}">${deadline.fromNow()}</span>
                     </p>`;
+            } else if (app.status === 'applied' && app.appliedAt) {
+                const appliedDate = dayjs(app.appliedAt);
+                deadlineHTML = `
+                    <p class="text-sm text-gray-500 mt-1">Applied on: ${appliedDate.format('MMMM D, YYYY')}
+                        <br><span class="font-medium text-gray-600">${appliedDate.fromNow()}</span>
+                    </p>`;
             }
             
             card.className = `bg-white p-4 rounded-lg shadow-sm ${borderColorClass}`;
@@ -618,7 +624,7 @@
                         ${app.status === 'to-apply' ? `<button data-action="apply" class="action-btn bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-green-200">Mark as Applied</button>` : ''}
                         ${app.status === 'applied' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Archive</button>` : ''}
                         ${app.status === 'to-apply' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Not Applying</button>` : ''}
-                        <button data-action="view" data-link="${app.link || '#'}" class="action-btn bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-indigo-100">View Details</button>
+                        ${app.link ? `<a href="${app.link}" target="_blank" class="action-btn bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-indigo-100">View Details</a>` : ''}
                     </div>
                     <div class="flex items-center space-x-1">
                         <button data-action="edit" class="text-gray-400 hover:text-indigo-500 p-1 rounded-full">
@@ -656,11 +662,6 @@
                      if (appToEdit) {
                          openEditModal(appToEdit);
                      }
-                 } else if (action === 'view') {
-                    const link = event.target.dataset.link;
-                    if (link && link !== '#') {
-                        window.open(link, '_blank');
-                    }
                  }
              } catch(error) { console.error(`Failed to ${action} application:`, error); }
         }
@@ -785,7 +786,11 @@
                 calendarGrid.innerHTML += `<div></div>`;
             }
 
-            const appsForCalendar = allApplications.filter(app => app.type === currentTab && ((app.status === 'to-apply' && app.deadline) || (app.status === 'applied' && app.appliedAt)));
+            const appsForCalendar = allApplications.filter(app => 
+                app.type === currentTab && 
+                ((app.status === 'to-apply' && app.deadline) || 
+                 (app.status === 'applied' && app.appliedAt))
+            );
 
             for (let i = 1; i <= daysInMonth; i++) {
                 const currentDateInLoop = firstDayOfMonth.date(i);
@@ -892,7 +897,7 @@
             if (!card) return;
             
             const id = card.dataset.id;
-            handleCardAction(id, e);
+            handleCardAction(id, action, e);
         });
         
     </script>
