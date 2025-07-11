@@ -205,6 +205,7 @@
         .bg-deadline-green { background-color: #10B981; } /* Emerald 500 */
         .bg-deadline-yellow { background-color: #F59E0B; } /* Amber 500 */
         .bg-deadline-red { background-color: #EF4444; } /* Red 500 */
+        .bg-deadline-blue { background-color: #3B82F6; } /* Blue 500 */
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -617,7 +618,7 @@
                         ${app.status === 'to-apply' ? `<button data-action="apply" class="action-btn bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-green-200">Mark as Applied</button>` : ''}
                         ${app.status === 'applied' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Archive</button>` : ''}
                         ${app.status === 'to-apply' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Not Applying</button>` : ''}
-                        <a href="${app.link || '#'}" target="_blank" class="action-btn bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-indigo-100">View Details</a>
+                        <button data-action="view" data-link="${app.link || '#'}" class="action-btn bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-indigo-100">View Details</button>
                     </div>
                     <div class="flex items-center space-x-1">
                         <button data-action="edit" class="text-gray-400 hover:text-indigo-500 p-1 rounded-full">
@@ -640,7 +641,10 @@
                         const rect = event.target.getBoundingClientRect();
                         confetti({ particleCount: 150, spread: 90, origin: { x: (rect.left + rect.right) / 2 / window.innerWidth, y: (rect.top + rect.bottom) / 2 / window.innerHeight }});
                      }
-                     await updateDoc(appRef, { status: 'applied' });
+                     await updateDoc(appRef, { 
+                        status: 'applied',
+                        appliedAt: dayjs().format('YYYY-MM-DD')
+                     });
                  } else if (action === 'archive') {
                      await updateDoc(appRef, { status: 'archived' });
                  } else if (action === 'delete') {
@@ -652,6 +656,11 @@
                      if (appToEdit) {
                          openEditModal(appToEdit);
                      }
+                 } else if (action === 'view') {
+                    const link = event.target.dataset.link;
+                    if (link && link !== '#') {
+                        window.open(link, '_blank');
+                    }
                  }
              } catch(error) { console.error(`Failed to ${action} application:`, error); }
         }
@@ -678,6 +687,7 @@
                     dataToSave.status = 'to-apply';
                     dataToSave.type = currentTab;
                     dataToSave.createdAt = serverTimestamp();
+                    dataToSave.appliedAt = null; // Ensure new apps don't have an applied date
                     await addDoc(collection(db, 'artifacts', appId, 'users', currentUserId, 'applications'), dataToSave);
                 }
                 closeModal();
@@ -766,53 +776,59 @@
             const daysInMonth = calendarDate.daysInMonth();
             const startDayOfWeek = firstDayOfMonth.isoWeekday(); // 1=Mon, 7=Sun
 
-            // Add day headers (Mon, Tue, etc.)
             const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             dayNames.forEach(day => {
                 calendarGrid.innerHTML += `<div class="font-bold text-center text-xs text-gray-500 p-2">${day}</div>`;
             });
 
-            // Add empty cells for padding at the start of the month
             for (let i = 1; i < startDayOfWeek; i++) {
                 calendarGrid.innerHTML += `<div></div>`;
             }
 
-            // Filter applications for the current tab that are "to-apply" and have deadlines
-            const appsForCalendar = allApplications.filter(app => app.type === currentTab && app.deadline && app.status === 'to-apply');
+            const appsForCalendar = allApplications.filter(app => app.type === currentTab && ((app.status === 'to-apply' && app.deadline) || (app.status === 'applied' && app.appliedAt)));
 
-            // Add day cells
             for (let i = 1; i <= daysInMonth; i++) {
                 const currentDateInLoop = firstDayOfMonth.date(i);
                 const dayCell = document.createElement('div');
                 dayCell.className = 'calendar-day border border-gray-100 rounded p-1 text-sm';
                 
                 let dayNumberClasses = 'text-gray-700';
-                // Highlight today's date
                 if (currentDateInLoop.isSame(dayjs(), 'day')) {
                     dayNumberClasses = 'bg-indigo-600 text-white rounded-full w-6 h-6 flex items-center justify-center';
                 }
                 dayCell.innerHTML = `<div class="flex justify-end"><div class="${dayNumberClasses}">${i}</div></div>`;
 
-                // Find and display applications for this day
-                const appsForDay = appsForCalendar.filter(app => dayjs(app.deadline).isSame(currentDateInLoop, 'day'));
+                const appsForDay = appsForCalendar.filter(app =>
+                    (app.status === 'to-apply' && dayjs(app.deadline).isSame(currentDateInLoop, 'day')) ||
+                    (app.status === 'applied' && dayjs(app.appliedAt).isSame(currentDateInLoop, 'day'))
+                );
                 
                 if (appsForDay.length > 0) {
                     const appsContainer = document.createElement('div');
                     appsContainer.className = 'mt-1 space-y-1';
                     appsForDay.forEach(app => {
-                        const deadline = dayjs(app.deadline);
-                        const now = dayjs();
-                        const daysUntilDeadline = deadline.diff(now, 'day');
-
-                        let bgColorClass = 'bg-deadline-green'; // Default: Far away
-                        if (daysUntilDeadline < 0) bgColorClass = 'bg-deadline-red'; // Missed
-                        else if (daysUntilDeadline <= 7) bgColorClass = 'bg-deadline-yellow'; // Nearing
-
                         const appEl = document.createElement('div');
-                        appEl.className = `calendar-app ${bgColorClass} cursor-pointer hover:opacity-75`;
-                        appEl.textContent = app.title;
-                        appEl.title = app.title; // Show full title on hover
+                        appEl.className = 'calendar-app cursor-pointer hover:opacity-75';
+                        appEl.title = app.title;
                         appEl.dataset.appId = app.id;
+
+                        if (app.status === 'to-apply') {
+                            const deadline = dayjs(app.deadline);
+                            const now = dayjs();
+                            const daysUntilDeadline = deadline.diff(now, 'day');
+
+                            let bgColorClass = 'bg-deadline-green';
+                            if (daysUntilDeadline < 0) bgColorClass = 'bg-deadline-red';
+                            else if (daysUntilDeadline <= 7) bgColorClass = 'bg-deadline-yellow';
+                            
+                            appEl.classList.add(bgColorClass);
+                            appEl.textContent = app.title;
+                        } else { // status is 'applied'
+                            appEl.classList.add('bg-deadline-blue');
+                            appEl.textContent = `Applied: ${app.title}`;
+                            appEl.title = `Applied on ${currentDateInLoop.format('MMM D')}: ${app.title}`;
+                        }
+
                         appsContainer.appendChild(appEl);
                     });
                     dayCell.appendChild(appsContainer);
@@ -835,7 +851,6 @@
             personalDeadlineContainer.classList.toggle('hidden', !e.target.checked);
         });
         
-        // Calendar event listeners
         viewCalendarBtn.addEventListener('click', openCalendarModal);
         closeCalendarModalBtn.addEventListener('click', closeCalendarModal);
         calendarModal.addEventListener('click', (e) => { if (e.target.classList.contains('modal-bg')) closeCalendarModal(); });
@@ -866,8 +881,6 @@
             }
         });
 
-
-        // ROBUST EVENT LISTENER FOR KANBAN BOARD
         kanbanBoard.addEventListener('click', (e) => {
             const targetButton = e.target.closest('button[data-action]');
             if (!targetButton) return;
@@ -879,7 +892,7 @@
             if (!card) return;
             
             const id = card.dataset.id;
-            handleCardAction(id, action, e);
+            handleCardAction(id, e);
         });
         
     </script>
