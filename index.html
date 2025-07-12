@@ -441,6 +441,9 @@
                 mainContent.classList.remove('hidden');
                 logoutBtn.classList.remove('hidden');
                 setupRealtimeListener();
+                
+                // Seed data if this is a new user
+                seedInitialData();
             } else {
                 currentUserId = null;
                 if (applicationsUnsubscribe) applicationsUnsubscribe();
@@ -451,6 +454,155 @@
                 closeCalendarModal(); // Close calendar if open on logout
             }
         });
+
+        // --- SEED INITIAL DATA ---
+        async function seedInitialData() {
+            // Check if we've already seeded data for this user
+            const hasSeeded = localStorage.getItem(`hasSeededData_${currentUserId}`);
+            if (hasSeeded) return;
+            
+            const appsCollectionRef = collection(db, 'artifacts', appId, 'users', currentUserId, 'applications');
+            const snapshot = await getDocs(appsCollectionRef);
+            
+            // Only seed if the user has no applications yet
+            if (snapshot.empty) {
+                const appsToSeed = [
+                    // PhD Applications (already applied)
+                    { 
+                        title: "PhD Position on Responsible Multimodal Information Delivery in Human-AI Interactions", 
+                        type: 'phd', 
+                        status: 'applied',
+                        link: "#",
+                        deadline: dayjs().add(30, 'day').format('YYYY-MM-DD'),
+                        deadlineType: 'official',
+                        appliedAt: dayjs().subtract(5, 'day').format('YYYY-MM-DD'),
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    },
+                    { 
+                        title: "RA at IACV Lab,IISc Bangalore", 
+                        type: 'phd', 
+                        status: 'applied',
+                        link: "#",
+                        deadline: dayjs().add(25, 'day').format('YYYY-MM-DD'),
+                        deadlineType: 'official',
+                        appliedAt: dayjs().subtract(8, 'day').format('YYYY-MM-DD'),
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    },
+                    { 
+                        title: "PhD Position in Deep Learning", 
+                        type: 'phd', 
+                        status: 'applied',
+                        link: "#",
+                        deadline: dayjs().add(40, 'day').format('YYYY-MM-DD'),
+                        deadlineType: 'official',
+                        appliedAt: dayjs().subtract(12, 'day').format('YYYY-MM-DD'),
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    },
+                    { 
+                        title: "PhD position on Interactive Robot Learning", 
+                        type: 'phd', 
+                        status: 'applied',
+                        link: "#",
+                        deadline: dayjs().add(50, 'day').format('YYYY-MM-DD'),
+                        deadlineType: 'official',
+                        appliedAt: dayjs().subtract(15, 'day').format('YYYY-MM-DD'),
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    },
+                    // Job Applications (already applied)
+                    { 
+                        title: "Analyst Intern Slice", 
+                        type: 'job', 
+                        status: 'applied',
+                        link: "#",
+                        deadline: dayjs().add(15, 'day').format('YYYY-MM-DD'),
+                        deadlineType: 'official',
+                        appliedAt: dayjs().subtract(3, 'day').format('YYYY-MM-DD'),
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    },
+                    { 
+                        title: "AI Bot Developer Intern", 
+                        type: 'job', 
+                        status: 'applied',
+                        link: "#",
+                        deadline: dayjs().add(20, 'day').format('YYYY-MM-DD'),
+                        deadlineType: 'official',
+                        appliedAt: dayjs().subtract(7, 'day').format('YYYY-MM-DD'),
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    },
+                    { 
+                        title: "AI/ML Intern EICEtech", 
+                        type: 'job', 
+                        status: 'applied',
+                        link: "#",
+                        deadline: dayjs().add(22, 'day').format('YYYY-MM-DD'),
+                        deadlineType: 'official',
+                        appliedAt: dayjs().subtract(10, 'day').format('YYYY-MM-DD'),
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    },
+                    { 
+                        title: "AI Intern - USA: GA-Atlanta", 
+                        type: 'job', 
+                        status: 'applied',
+                        link: "#",
+                        deadline: dayjs().add(35, 'day').format('YYYY-MM-DD'),
+                        deadlineType: 'official',
+                        appliedAt: dayjs().subtract(14, 'day').format('YYYY-MM-DD'),
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    },
+                    { 
+                        title: "ML Data Scientist Remote", 
+                        type: 'job', 
+                        status: 'applied',
+                        link: "#",
+                        deadline: dayjs().add(45, 'day').format('YYYY-MM-DD'),
+                        deadlineType: 'official',
+                        appliedAt: dayjs().subtract(18, 'day').format('YYYY-MM-DD'),
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    },
+                    { 
+                        title: "Founder's Office Summer Intern at Bern", 
+                        type: 'job', 
+                        status: 'applied',
+                        link: "#",
+                        deadline: dayjs().add(60, 'day').format('YYYY-MM-DD'),
+                        deadlineType: 'official',
+                        appliedAt: dayjs().subtract(20, 'day').format('YYYY-MM-DD'),
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    },
+                    { 
+                        title: "ML Intern Jupiter", 
+                        type: 'job', 
+                        status: 'applied',
+                        link: "#",
+                        deadline: dayjs().add(10, 'day').format('YYYY-MM-DD'),
+                        deadlineType: 'official',
+                        appliedAt: dayjs().subtract(25, 'day').format('YYYY-MM-DD'),
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    }
+                ];
+
+                try {
+                    for (const app of appsToSeed) {
+                        await addDoc(appsCollectionRef, app);
+                    }
+                    localStorage.setItem(`hasSeededData_${currentUserId}`, 'true');
+                    console.log('Initial data seeded successfully');
+                } catch (error) {
+                    console.error('Error seeding initial data:', error);
+                }
+            }
+        }
 
         // --- AUTH FORM HANDLING ---
         toggleAuthLink.addEventListener('click', (e) => {
@@ -591,7 +743,13 @@
             let borderColorClass = 'border-l-4 border-gray-300';
             let deadlineHTML = `<p class="text-sm text-gray-500 mt-1">No deadline set</p>`;
 
-            if (app.deadline) {
+            if (app.status === 'applied' && app.appliedAt) {
+                const appliedDate = dayjs(app.appliedAt);
+                deadlineHTML = `
+                    <p class="text-sm text-gray-500 mt-1">Applied on: ${appliedDate.format('MMMM D, YYYY')}
+                        <br><span class="font-medium text-gray-600">${appliedDate.fromNow()}</span>
+                    </p>`;
+            } else if (app.deadline) {
                 const deadline = dayjs(app.deadline);
                 const now = dayjs();
                 const daysUntilDeadline = deadline.diff(now, 'day');
@@ -607,12 +765,6 @@
                     <p class="text-sm text-gray-500 mt-1">Deadline: ${deadline.format('MMMM D, YYYY')} <span class="text-xs text-gray-400">${deadlineType}</span>
                         <br><span class="font-medium ${daysUntilDeadline < 0 ? 'text-red-600' : 'text-gray-600'}">${deadline.fromNow()}</span>
                     </p>`;
-            } else if (app.status === 'applied' && app.appliedAt) {
-                const appliedDate = dayjs(app.appliedAt);
-                deadlineHTML = `
-                    <p class="text-sm text-gray-500 mt-1">Applied on: ${appliedDate.format('MMMM D, YYYY')}
-                        <br><span class="font-medium text-gray-600">${appliedDate.fromNow()}</span>
-                    </p>`;
             }
             
             card.className = `bg-white p-4 rounded-lg shadow-sm ${borderColorClass}`;
@@ -624,7 +776,7 @@
                         ${app.status === 'to-apply' ? `<button data-action="apply" class="action-btn bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-green-200">Mark as Applied</button>` : ''}
                         ${app.status === 'applied' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Archive</button>` : ''}
                         ${app.status === 'to-apply' ? `<button data-action="archive" class="action-btn bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold hover:bg-gray-200">Not Applying</button>` : ''}
-                        ${app.link ? `<a href="${app.link}" target="_blank" class="action-btn bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-indigo-100">View Details</a>` : ''}
+                        <button data-action="view" data-link="${app.link || '#'}" class="action-btn bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-indigo-100">View Details</button>
                     </div>
                     <div class="flex items-center space-x-1">
                         <button data-action="edit" class="text-gray-400 hover:text-indigo-500 p-1 rounded-full">
@@ -662,6 +814,12 @@
                      if (appToEdit) {
                          openEditModal(appToEdit);
                      }
+                 } else if (action === 'view') {
+                    const button = event.target.closest('button[data-action="view"]');
+                    const link = button.dataset.link;
+                    if (link && link !== '#') {
+                        window.open(link, '_blank');
+                    }
                  }
              } catch(error) { console.error(`Failed to ${action} application:`, error); }
         }
@@ -786,10 +944,13 @@
                 calendarGrid.innerHTML += `<div></div>`;
             }
 
+            // Corrected filter to include ALL 'applied' items and 'to-apply' items with a deadline
             const appsForCalendar = allApplications.filter(app => 
-                app.type === currentTab && 
-                ((app.status === 'to-apply' && app.deadline) || 
-                 (app.status === 'applied' && app.appliedAt))
+                app.type === currentTab &&
+                (
+                    (app.status === 'to-apply' && app.deadline) || 
+                    (app.status === 'applied')
+                )
             );
 
             for (let i = 1; i <= daysInMonth; i++) {
@@ -803,10 +964,16 @@
                 }
                 dayCell.innerHTML = `<div class="flex justify-end"><div class="${dayNumberClasses}">${i}</div></div>`;
 
-                const appsForDay = appsForCalendar.filter(app =>
-                    (app.status === 'to-apply' && dayjs(app.deadline).isSame(currentDateInLoop, 'day')) ||
-                    (app.status === 'applied' && dayjs(app.appliedAt).isSame(currentDateInLoop, 'day'))
-                );
+                const appsForDay = appsForCalendar.filter(app => {
+                    if (app.status === 'to-apply' && app.deadline) {
+                        return dayjs(app.deadline).isSame(currentDateInLoop, 'day');
+                    } else if (app.status === 'applied') {
+                        // Show applied applications on their applied date, or fall back to deadline
+                        const displayDate = app.appliedAt || app.deadline;
+                        return displayDate && dayjs(displayDate).isSame(currentDateInLoop, 'day');
+                    }
+                    return false;
+                });
                 
                 if (appsForDay.length > 0) {
                     const appsContainer = document.createElement('div');
@@ -830,8 +997,10 @@
                             appEl.textContent = app.title;
                         } else { // status is 'applied'
                             appEl.classList.add('bg-deadline-blue');
-                            appEl.textContent = `Applied: ${app.title}`;
-                            appEl.title = `Applied on ${currentDateInLoop.format('MMM D')}: ${app.title}`;
+                            const shortTitle = app.title.length > 20 ? app.title.substring(0, 17) + '...' : app.title;
+                            appEl.textContent = `✓ ${shortTitle}`;
+                            const appliedDateText = app.appliedAt ? dayjs(app.appliedAt).format('MMM D') : 'on deadline';
+                            appEl.title = `Applied on ${appliedDateText}: ${app.title}`;
                         }
 
                         appsContainer.appendChild(appEl);
