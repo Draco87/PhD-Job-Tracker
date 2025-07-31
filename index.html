@@ -275,6 +275,7 @@
             <div class="flex justify-center items-center mb-8 border-b border-gray-200">
                 <button id="phd-tab-btn" class="tab-btn border-b-2 border-indigo-600 text-indigo-600 py-3 px-6 font-semibold">PhD Applications</button>
                 <button id="job-tab-btn" class="tab-btn text-gray-500 py-3 px-6 font-semibold">Job Applications</button>
+                <button id="scholarship-tab-btn" class="tab-btn text-gray-500 py-3 px-6 font-semibold">Scholarships</button>
                 <div class="flex-grow border-b-2 border-gray-200"></div>
             </div>
             <div class="text-center mb-8 flex justify-center items-center gap-4">
@@ -294,7 +295,19 @@
     </div>
 
     <!-- Modal for Adding/Editing Application -->
-    <div id="modal" class="fixed inset-0 z-50 items-center justify-center hidden"><div class="modal-bg fixed inset-0 transition-opacity" aria-hidden="true"></div><div class="bg-white rounded-xl shadow-2xl m-4 w-full max-w-lg transform transition-all relative"><div class="p-6"><div class="flex justify-between items-start"><h3 class="text-2xl font-bold text-gray-800" id="modal-title">Add New Application</h3><button id="close-modal-btn" class="text-gray-400 hover:text-gray-600"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><form id="app-form" class="mt-6 space-y-4"><input type="hidden" id="app-id"><div><label for="app-title" class="block text-sm font-medium text-gray-700">Position / Program Title</label><input type="text" id="app-title" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., PhD in Computer Science" required></div><div><label for="app-link" class="block text-sm font-medium text-gray-700">Application Link (URL)</label><input type="url" id="app-link" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://example.com/apply" required></div>
+    <div id="modal" class="fixed inset-0 z-50 items-center justify-center hidden"><div class="modal-bg fixed inset-0 transition-opacity" aria-hidden="true"></div><div class="bg-white rounded-xl shadow-2xl m-4 w-full max-w-lg transform transition-all relative"><div class="p-6"><div class="flex justify-between items-start"><h3 class="text-2xl font-bold text-gray-800" id="modal-title">Add New Application</h3><button id="close-modal-btn" class="text-gray-400 hover:text-gray-600"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><form id="app-form" class="mt-6 space-y-4"><input type="hidden" id="app-id">
+            <div>
+                <label for="app-title" id="app-title-label" class="block text-sm font-medium text-gray-700">Position / Program Title</label>
+                <input type="text" id="app-title" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., PhD in Computer Science" required>
+            </div>
+            <div id="app-secondary-field-container">
+                <label for="app-secondary-field" id="app-secondary-label" class="block text-sm font-medium text-gray-700">University</label>
+                <input type="text" id="app-secondary-field" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., Stanford University">
+            </div>
+            <div>
+                <label for="app-link" class="block text-sm font-medium text-gray-700">Application Link (URL)</label>
+                <input type="url" id="app-link" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://example.com/apply">
+            </div>
             <div>
                 <div class="flex items-center space-x-2">
                     <input type="checkbox" id="personal-deadline-checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
@@ -391,6 +404,7 @@
         const resetMessage = document.getElementById('reset-message');
         const phdTabBtn = document.getElementById('phd-tab-btn');
         const jobTabBtn = document.getElementById('job-tab-btn');
+        const scholarshipTabBtn = document.getElementById('scholarship-tab-btn');
         const addAppBtn = document.getElementById('add-app-btn');
         const kanbanBoard = document.getElementById('kanban-board');
         const modal = document.getElementById('modal');
@@ -399,6 +413,9 @@
         const appForm = document.getElementById('app-form');
         const appIdInput = document.getElementById('app-id');
         const appTitleInput = document.getElementById('app-title');
+        const appTitleLabel = document.getElementById('app-title-label');
+        const appSecondaryField = document.getElementById('app-secondary-field');
+        const appSecondaryLabel = document.getElementById('app-secondary-label');
         const appLinkInput = document.getElementById('app-link');
         const appDeadlineInput = document.getElementById('app-deadline');
         const personalDeadlineCheckbox = document.getElementById('personal-deadline-checkbox');
@@ -441,9 +458,6 @@
                 mainContent.classList.remove('hidden');
                 logoutBtn.classList.remove('hidden');
                 setupRealtimeListener();
-                
-                // Seed data if this is a new user
-                seedInitialData();
             } else {
                 currentUserId = null;
                 if (applicationsUnsubscribe) applicationsUnsubscribe();
@@ -454,155 +468,6 @@
                 closeCalendarModal(); // Close calendar if open on logout
             }
         });
-
-        // --- SEED INITIAL DATA ---
-        async function seedInitialData() {
-            // Check if we've already seeded data for this user
-            const hasSeeded = localStorage.getItem(`hasSeededData_${currentUserId}`);
-            if (hasSeeded) return;
-            
-            const appsCollectionRef = collection(db, 'artifacts', appId, 'users', currentUserId, 'applications');
-            const snapshot = await getDocs(appsCollectionRef);
-            
-            // Only seed if the user has no applications yet
-            if (snapshot.empty) {
-                const appsToSeed = [
-                    // PhD Applications (already applied)
-                    { 
-                        title: "PhD Position on Responsible Multimodal Information Delivery in Human-AI Interactions", 
-                        type: 'phd', 
-                        status: 'applied',
-                        link: "#",
-                        deadline: dayjs().add(30, 'day').format('YYYY-MM-DD'),
-                        deadlineType: 'official',
-                        appliedAt: dayjs().subtract(5, 'day').format('YYYY-MM-DD'),
-                        createdAt: serverTimestamp(),
-                        updatedAt: serverTimestamp()
-                    },
-                    { 
-                        title: "RA at IACV Lab,IISc Bangalore", 
-                        type: 'phd', 
-                        status: 'applied',
-                        link: "#",
-                        deadline: dayjs().add(25, 'day').format('YYYY-MM-DD'),
-                        deadlineType: 'official',
-                        appliedAt: dayjs().subtract(8, 'day').format('YYYY-MM-DD'),
-                        createdAt: serverTimestamp(),
-                        updatedAt: serverTimestamp()
-                    },
-                    { 
-                        title: "PhD Position in Deep Learning", 
-                        type: 'phd', 
-                        status: 'applied',
-                        link: "#",
-                        deadline: dayjs().add(40, 'day').format('YYYY-MM-DD'),
-                        deadlineType: 'official',
-                        appliedAt: dayjs().subtract(12, 'day').format('YYYY-MM-DD'),
-                        createdAt: serverTimestamp(),
-                        updatedAt: serverTimestamp()
-                    },
-                    { 
-                        title: "PhD position on Interactive Robot Learning", 
-                        type: 'phd', 
-                        status: 'applied',
-                        link: "#",
-                        deadline: dayjs().add(50, 'day').format('YYYY-MM-DD'),
-                        deadlineType: 'official',
-                        appliedAt: dayjs().subtract(15, 'day').format('YYYY-MM-DD'),
-                        createdAt: serverTimestamp(),
-                        updatedAt: serverTimestamp()
-                    },
-                    // Job Applications (already applied)
-                    { 
-                        title: "Analyst Intern Slice", 
-                        type: 'job', 
-                        status: 'applied',
-                        link: "#",
-                        deadline: dayjs().add(15, 'day').format('YYYY-MM-DD'),
-                        deadlineType: 'official',
-                        appliedAt: dayjs().subtract(3, 'day').format('YYYY-MM-DD'),
-                        createdAt: serverTimestamp(),
-                        updatedAt: serverTimestamp()
-                    },
-                    { 
-                        title: "AI Bot Developer Intern", 
-                        type: 'job', 
-                        status: 'applied',
-                        link: "#",
-                        deadline: dayjs().add(20, 'day').format('YYYY-MM-DD'),
-                        deadlineType: 'official',
-                        appliedAt: dayjs().subtract(7, 'day').format('YYYY-MM-DD'),
-                        createdAt: serverTimestamp(),
-                        updatedAt: serverTimestamp()
-                    },
-                    { 
-                        title: "AI/ML Intern EICEtech", 
-                        type: 'job', 
-                        status: 'applied',
-                        link: "#",
-                        deadline: dayjs().add(22, 'day').format('YYYY-MM-DD'),
-                        deadlineType: 'official',
-                        appliedAt: dayjs().subtract(10, 'day').format('YYYY-MM-DD'),
-                        createdAt: serverTimestamp(),
-                        updatedAt: serverTimestamp()
-                    },
-                    { 
-                        title: "AI Intern - USA: GA-Atlanta", 
-                        type: 'job', 
-                        status: 'applied',
-                        link: "#",
-                        deadline: dayjs().add(35, 'day').format('YYYY-MM-DD'),
-                        deadlineType: 'official',
-                        appliedAt: dayjs().subtract(14, 'day').format('YYYY-MM-DD'),
-                        createdAt: serverTimestamp(),
-                        updatedAt: serverTimestamp()
-                    },
-                    { 
-                        title: "ML Data Scientist Remote", 
-                        type: 'job', 
-                        status: 'applied',
-                        link: "#",
-                        deadline: dayjs().add(45, 'day').format('YYYY-MM-DD'),
-                        deadlineType: 'official',
-                        appliedAt: dayjs().subtract(18, 'day').format('YYYY-MM-DD'),
-                        createdAt: serverTimestamp(),
-                        updatedAt: serverTimestamp()
-                    },
-                    { 
-                        title: "Founder's Office Summer Intern at Bern", 
-                        type: 'job', 
-                        status: 'applied',
-                        link: "#",
-                        deadline: dayjs().add(60, 'day').format('YYYY-MM-DD'),
-                        deadlineType: 'official',
-                        appliedAt: dayjs().subtract(20, 'day').format('YYYY-MM-DD'),
-                        createdAt: serverTimestamp(),
-                        updatedAt: serverTimestamp()
-                    },
-                    { 
-                        title: "ML Intern Jupiter", 
-                        type: 'job', 
-                        status: 'applied',
-                        link: "#",
-                        deadline: dayjs().add(10, 'day').format('YYYY-MM-DD'),
-                        deadlineType: 'official',
-                        appliedAt: dayjs().subtract(25, 'day').format('YYYY-MM-DD'),
-                        createdAt: serverTimestamp(),
-                        updatedAt: serverTimestamp()
-                    }
-                ];
-
-                try {
-                    for (const app of appsToSeed) {
-                        await addDoc(appsCollectionRef, app);
-                    }
-                    localStorage.setItem(`hasSeededData_${currentUserId}`, 'true');
-                    console.log('Initial data seeded successfully');
-                } catch (error) {
-                    console.error('Error seeding initial data:', error);
-                }
-            }
-        }
 
         // --- AUTH FORM HANDLING ---
         toggleAuthLink.addEventListener('click', (e) => {
@@ -741,14 +606,21 @@
             card.dataset.id = app.id;
             card.id = `app-card-${app.id}`; // Add unique ID for scrolling
             let borderColorClass = 'border-l-4 border-gray-300';
-            let deadlineHTML = `<p class="text-sm text-gray-500 mt-1">No deadline set</p>`;
+            let secondaryFieldHTML = '';
 
+            // University / Company / Provider field
+            if (app.type === 'phd' && app.university) {
+                secondaryFieldHTML = `<p class="text-sm text-gray-600 mt-2 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>${app.university}</p>`;
+            } else if (app.type === 'job' && app.company) {
+                secondaryFieldHTML = `<p class="text-sm text-gray-600 mt-2 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd" /></svg>${app.company}</p>`;
+            } else if (app.type === 'scholarship' && app.provider) {
+                secondaryFieldHTML = `<p class="text-sm text-gray-600 mt-2 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 16c1.255 0 2.443-.29 3.5-.804V4.804zM14.5 4c1.255 0 2.443.29 3.5.804v10A7.969 7.969 0 0114.5 16c-1.255 0-2.443-.29-3.5-.804V4.804A7.968 7.968 0 0114.5 4z" /></svg>${app.provider}</p>`;
+            }
+
+            let deadlineHTML = `<p class="text-sm text-gray-500 mt-1">No deadline set</p>`;
             if (app.status === 'applied' && app.appliedAt) {
                 const appliedDate = dayjs(app.appliedAt);
-                deadlineHTML = `
-                    <p class="text-sm text-gray-500 mt-1">Applied on: ${appliedDate.format('MMMM D, YYYY')}
-                        <br><span class="font-medium text-gray-600">${appliedDate.fromNow()}</span>
-                    </p>`;
+                deadlineHTML = `<p class="text-sm text-gray-500 mt-1">Applied on: ${appliedDate.format('MMMM D, YYYY')}</p>`;
             } else if (app.deadline) {
                 const deadline = dayjs(app.deadline);
                 const now = dayjs();
@@ -761,15 +633,13 @@
                   else borderColorClass = 'border-l-4 border-green-500';
                 }
                 
-                deadlineHTML = `
-                    <p class="text-sm text-gray-500 mt-1">Deadline: ${deadline.format('MMMM D, YYYY')} <span class="text-xs text-gray-400">${deadlineType}</span>
-                        <br><span class="font-medium ${daysUntilDeadline < 0 ? 'text-red-600' : 'text-gray-600'}">${deadline.fromNow()}</span>
-                    </p>`;
+                deadlineHTML = `<p class="text-sm text-gray-500 mt-1">Deadline: ${deadline.format('MMMM D, YYYY')} <span class="text-xs text-gray-400">${deadlineType}</span><br><span class="font-medium ${daysUntilDeadline < 0 ? 'text-red-600' : 'text-gray-600'}">${deadline.fromNow()}</span></p>`;
             }
             
             card.className = `bg-white p-4 rounded-lg shadow-sm ${borderColorClass}`;
             card.innerHTML = `
                 <h3 class="font-bold text-md text-gray-900">${app.title || 'Untitled Application'}</h3>
+                ${secondaryFieldHTML}
                 ${deadlineHTML}
                 <div class="mt-4 flex justify-between items-center text-sm">
                     <div class="flex flex-wrap items-center gap-2">
@@ -832,11 +702,23 @@
 
             const dataToSave = {
                 title: appTitleInput.value,
-                link: appLinkInput.value,
+                link: appLinkInput.value || "#",
                 deadline: deadlineValue || null,
                 deadlineType: deadlineValue ? (isPersonal ? 'personal' : 'official') : null,
                 updatedAt: serverTimestamp()
             };
+
+            switch(currentTab) {
+                case 'phd':
+                    dataToSave.university = appSecondaryField.value;
+                    break;
+                case 'job':
+                    dataToSave.company = appSecondaryField.value;
+                    break;
+                case 'scholarship':
+                    dataToSave.provider = appSecondaryField.value;
+                    break;
+            }
 
             try {
                 if (id) {
@@ -863,6 +745,27 @@
             appTitleInput.value = app.title;
             appLinkInput.value = app.link;
 
+            switch(app.type) {
+                case 'phd':
+                    appTitleLabel.textContent = "Program Title";
+                    appSecondaryLabel.textContent = "University";
+                    appSecondaryField.value = app.university || "";
+                    appSecondaryField.placeholder = "e.g., Stanford University";
+                    break;
+                case 'job':
+                    appTitleLabel.textContent = "Position Title";
+                    appSecondaryLabel.textContent = "Company";
+                    appSecondaryField.value = app.company || "";
+                    appSecondaryField.placeholder = "e.g., Google";
+                    break;
+                case 'scholarship':
+                    appTitleLabel.textContent = "Scholarship Name";
+                    appSecondaryLabel.textContent = "Provider / Organization";
+                    appSecondaryField.value = app.provider || "";
+                    appSecondaryField.placeholder = "e.g., Fulbright Commission";
+                    break;
+            }
+
             const isPersonal = app.deadlineType === 'personal';
             personalDeadlineCheckbox.checked = isPersonal;
             
@@ -883,6 +786,28 @@
             appForm.reset();
             modalTitle.textContent = "Add New Application";
             appIdInput.value = '';
+
+            switch(currentTab) {
+                case 'phd':
+                    appTitleLabel.textContent = "Program Title";
+                    appTitleInput.placeholder = "e.g., PhD in Computer Science";
+                    appSecondaryLabel.textContent = "University";
+                    appSecondaryField.placeholder = "e.g., Stanford University";
+                    break;
+                case 'job':
+                    appTitleLabel.textContent = "Position Title";
+                    appTitleInput.placeholder = "e.g., Software Engineer Intern";
+                    appSecondaryLabel.textContent = "Company";
+                    appSecondaryField.placeholder = "e.g., Google";
+                    break;
+                case 'scholarship':
+                    appTitleLabel.textContent = "Scholarship Name";
+                    appTitleInput.placeholder = "e.g., Rhodes Scholarship";
+                    appSecondaryLabel.textContent = "Provider / Organization";
+                    appSecondaryField.placeholder = "e.g., Fulbright Commission";
+                    break;
+            }
+
             personalDeadlineCheckbox.checked = false;
             officialDeadlineContainer.classList.remove('hidden');
             personalDeadlineContainer.classList.add('hidden');
@@ -897,16 +822,24 @@
 
         function switchTab(tab) {
             currentTab = tab;
+            const tabs = [phdTabBtn, jobTabBtn, scholarshipTabBtn];
+            const activeClasses = ['border-indigo-600', 'text-indigo-600'];
+            const inactiveClasses = ['text-gray-500'];
+
+            tabs.forEach(t => {
+                t.classList.remove(...activeClasses);
+                t.classList.add(...inactiveClasses);
+            });
+
             if (tab === 'phd') {
-                phdTabBtn.classList.add('border-indigo-600', 'text-indigo-600');
-                phdTabBtn.classList.remove('text-gray-500');
-                jobTabBtn.classList.remove('border-indigo-600', 'text-indigo-600');
-                jobTabBtn.classList.add('text-gray-500');
-            } else {
-                jobTabBtn.classList.add('border-indigo-600', 'text-indigo-600');
-                jobTabBtn.classList.remove('text-gray-500');
-                phdTabBtn.classList.remove('border-indigo-600', 'text-indigo-600');
-                phdTabBtn.classList.add('text-gray-500');
+                phdTabBtn.classList.add(...activeClasses);
+                phdTabBtn.classList.remove(...inactiveClasses);
+            } else if (tab === 'job') {
+                jobTabBtn.classList.add(...activeClasses);
+                jobTabBtn.classList.remove(...inactiveClasses);
+            } else if (tab === 'scholarship') {
+                scholarshipTabBtn.classList.add(...activeClasses);
+                scholarshipTabBtn.classList.remove(...inactiveClasses);
             }
             renderKanbanBoard();
             if (!calendarModal.classList.contains('hidden')) {
@@ -944,7 +877,6 @@
                 calendarGrid.innerHTML += `<div></div>`;
             }
 
-            // Corrected filter to include ALL 'applied' items and 'to-apply' items with a deadline
             const appsForCalendar = allApplications.filter(app => 
                 app.type === currentTab &&
                 (
@@ -968,7 +900,6 @@
                     if (app.status === 'to-apply' && app.deadline) {
                         return dayjs(app.deadline).isSame(currentDateInLoop, 'day');
                     } else if (app.status === 'applied') {
-                        // Show applied applications on their applied date, or fall back to deadline
                         const displayDate = app.appliedAt || app.deadline;
                         return displayDate && dayjs(displayDate).isSame(currentDateInLoop, 'day');
                     }
@@ -1011,6 +942,69 @@
                 calendarGrid.appendChild(dayCell);
             }
         }
+        
+        // --- DATA SEEDING FUNCTION (FOR DEMONSTRATION) ---
+        // You can run this function from your browser's developer console ONCE
+        // to add the sample "Applied" applications to your tracker.
+        // 1. Login to the app.
+        // 2. Open the developer console (usually F12 or Right-click -> Inspect).
+        // 3. Go to the "Console" tab.
+        // 4. Type `seedAppliedData()` and press Enter.
+        // 5. Refresh the page to see the new data on your board and calendar.
+        window.seedAppliedData = async function() {
+            if (!currentUserId) {
+                console.error("You must be logged in to seed data.");
+                alert("You must be logged in to seed data.");
+                return;
+            }
+            console.log("Seeding applied application data...");
+            const appsToSeed = [
+                // PhD Apps
+                { title: "PhD Position on Responsible Multimodal Information Delivery in Human-AI Interactions", type: 'phd', daysAgo: 5, deadlineDays: 30, university: "Delft University" },
+                { title: "RA at IACV Lab,IISc Bangalore", type: 'phd', daysAgo: 8, deadlineDays: 25, university: "IISc Bangalore" },
+                { title: "PhD Position in Deep Learning", type: 'phd', daysAgo: 12, deadlineDays: 40, university: "ETH Zurich" },
+                { title: "PhD position on Interactive Robot Learning", type: 'phd', daysAgo: 15, deadlineDays: 50, university: "KTH Royal Institute" },
+                // Job Apps
+                { title: "Analyst Intern Slice", type: 'job', daysAgo: 3, deadlineDays: 15, company: "Slice" },
+                { title: "AI Bot Developer Intern", type: 'job', daysAgo: 7, deadlineDays: 20, company: "TechNext" },
+                { title: "AI/ML Intern EICEtech", type: 'job', daysAgo: 10, deadlineDays: 22, company: "EICEtech" },
+                { title: "AI Intern - USA: GA-Atlanta", type: 'job', daysAgo: 14, deadlineDays: 35, company: "Innovate AI" },
+                { title: "ML Data Scientist Remote", type: 'job', daysAgo: 18, deadlineDays: 45, company: "DataCorp" },
+                { title: "Founder's Office Summer Intern at Bern", type: 'job', daysAgo: 20, deadlineDays: 60, company: "Bern" },
+                { title: "ML Intern Jupiter", type: 'job', daysAgo: 25, deadlineDays: 10, company: "Jupiter" },
+            ];
+
+            const appsCollectionRef = collection(db, 'artifacts', appId, 'users', currentUserId, 'applications');
+
+            for (const app of appsToSeed) {
+                const appliedAtDate = dayjs().subtract(app.daysAgo, 'day').format('YYYY-MM-DD');
+                const deadlineDate = dayjs(appliedAtDate).add(app.deadlineDays, 'day').format('YYYY-MM-DD');
+
+                const dataToSave = {
+                    title: app.title,
+                    link: "#",
+                    deadline: deadlineDate,
+                    deadlineType: 'official',
+                    status: 'applied',
+                    type: app.type,
+                    appliedAt: appliedAtDate,
+                    university: app.university || null,
+                    company: app.company || null,
+                    provider: null,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp(),
+                };
+                try {
+                    await addDoc(appsCollectionRef, dataToSave);
+                    console.log(`Added: ${app.title}`);
+                } catch (error) {
+                    console.error(`Failed to add ${app.title}:`, error);
+                }
+            }
+            alert("Seeding complete! The page will now refresh.");
+            window.location.reload();
+        }
+
 
         // --- EVENT LISTENERS ---
         addAppBtn.addEventListener('click', openAddModal);
@@ -1020,6 +1014,7 @@
         appForm.addEventListener('submit', saveApplication);
         phdTabBtn.addEventListener('click', () => switchTab('phd'));
         jobTabBtn.addEventListener('click', () => switchTab('job'));
+        scholarshipTabBtn.addEventListener('click', () => switchTab('scholarship'));
         personalDeadlineCheckbox.addEventListener('change', (e) => {
             officialDeadlineContainer.classList.toggle('hidden', e.target.checked);
             personalDeadlineContainer.classList.toggle('hidden', !e.target.checked);
