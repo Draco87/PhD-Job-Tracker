@@ -7,7 +7,7 @@ A clean, modern, and self-hosted web application to organize the stressful proce
 ## ✨ Key Features
 
 - **Visual Kanban Board**: View your applications in *To Apply*, *Applied*, and *Archived* columns for a clear overview of your progress.  
-- **Dual Tracking**: Easily switch between dedicated views for your PhD and Job applications with a single click.  
+- **Multi-Tracking**: Easily switch between dedicated views for your PhD, job and Scholarships applications with a single click.  
 - **Deadline Highlighting**: Applications with deadlines approaching within a week are automatically highlighted in yellow; overdue ones in red to help you prioritize.  
 - **Confetti Celebration**: Enjoy a satisfying burst of confetti every time you mark an application as "Applied"!  
 - **Cloud-Based & Persistent**: Data is saved in real-time to your personal Firebase Firestore database, ensuring it's always up-to-date.  
