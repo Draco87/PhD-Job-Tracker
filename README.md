@@ -1,4 +1,4 @@
-# 🎓 PhD & Job Application Tracker
+# 🎓 Application Tracker
 
 A clean, modern, and self-hosted web application to organize the stressful process of applying for PhD programs and jobs. This tool provides a visual dashboard to keep track of every application's status, deadlines, and important links, with all your data stored securely in your own personal cloud database.
 
